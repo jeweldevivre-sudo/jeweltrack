@@ -1,474 +1,346 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JewelTrack — Production Management</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
 <style>
+:root{--bg:#fff;--bg2:#f7f7f5;--bg3:#f0efe9;--tx:#1a1a18;--tx2:#6b6b67;--tx3:#9e9e9a;--bd:rgba(0,0,0,0.1);--bd2:rgba(0,0,0,0.18);--r:8px;--rl:12px;--font:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;--red:#D85A30;--red-bg:#FAECE7;--red-tx:#993C1D;--yel:#EF9F27;--yel-bg:#FAEEDA;--yel-tx:#854F0B;--grn:#639922;--grn-bg:#EAF3DE;--grn-tx:#3B6D11;--blu-bg:#E6F1FB;--blu-tx:#185FA5;--pur-bg:#EEEDFE;--pur-tx:#534AB7;--gry-bg:#F1EFE8;--gry-tx:#5F5E5A}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a18;--bg2:#242420;--bg3:#1d1d1a;--tx:#f0efe9;--tx2:#9e9e9a;--tx3:#6b6b67;--bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.18);--red-bg:#3d1a0e;--red-tx:#F09575;--yel-bg:#3d2a08;--yel-tx:#FAC775;--grn-bg:#1a2e08;--grn-tx:#97C459;--blu-bg:#0d1e30;--blu-tx:#85B7EB;--pur-bg:#1e1b3a;--pur-tx:#AFA9EC;--gry-bg:#2a2a26;--gry-tx:#B4B2A9}}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans,'system-ui');background:var(--color-background-tertiary);color:var(--color-text-primary);font-size:14px;min-height:100vh}
+body{font-family:var(--font);background:var(--bg3);color:var(--tx);font-size:14px;min-height:100vh}
 .app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
-.sidebar{background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);padding:1.25rem 0;position:sticky;top:0;height:100vh;overflow-y:auto}
-.logo{padding:0 1.25rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:0.75rem}
-.logo-title{font-size:15px;font-weight:500;color:var(--color-text-primary)}
-.logo-sub{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 1.25rem;cursor:pointer;color:var(--color-text-secondary);font-size:13px;transition:all 0.15s;border-left:2px solid transparent}
-.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
-.nav-item.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-left-color:var(--color-text-primary);font-weight:500}
+.sidebar{background:var(--bg);border-right:0.5px solid var(--bd);padding:1.25rem 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:0 1.25rem 1.25rem;border-bottom:0.5px solid var(--bd);margin-bottom:.75rem}
+.logo-title{font-size:15px;font-weight:500;display:flex;align-items:center;gap:7px}
+.logo-sub{font-size:11px;color:var(--tx2);margin-top:3px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 1.25rem;cursor:pointer;color:var(--tx2);font-size:13px;transition:all .15s;border-left:2px solid transparent;user-select:none}
+.nav-item:hover{background:var(--bg2);color:var(--tx)}
+.nav-item.active{background:var(--bg2);color:var(--tx);border-left-color:var(--tx);font-weight:500}
 .nav-item i{font-size:16px}
-.nav-section{font-size:10px;font-weight:500;color:var(--color-text-tertiary);padding:1rem 1.25rem 0.4rem;letter-spacing:0.05em;text-transform:uppercase}
+.nav-sec{font-size:10px;font-weight:500;color:var(--tx3);padding:1rem 1.25rem .4rem;letter-spacing:.06em;text-transform:uppercase}
 .main{padding:1.5rem;overflow-y:auto}
-.page{display:none}
-.page.active{display:block}
-.page-header{margin-bottom:1.5rem}
-.page-title{font-size:18px;font-weight:500}
-.page-sub{font-size:13px;color:var(--color-text-secondary);margin-top:3px}
+.page{display:none}.page.active{display:block}
+.ph{margin-bottom:1.5rem}
+.pt{font-size:18px;font-weight:500}
+.ps{font-size:13px;color:var(--tx2);margin-top:3px}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
-.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;border:0.5px solid var(--color-border-tertiary)}
-.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em}
-.metric-val{font-size:22px;font-weight:500}
-.metric-val.red{color:#D85A30}
-.metric-val.yellow{color:#BA7517}
-.metric-val.green{color:#3B6D11}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
-.card-header{padding:0.875rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between;gap:8px}
-.card-title{font-size:14px;font-weight:500}
-.card-body{padding:1.25rem}
+.metric{background:var(--bg2);border-radius:var(--r);padding:1rem;border:.5px solid var(--bd)}
+.ml{font-size:10px;color:var(--tx2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.mv{font-size:24px;font-weight:500}
+.mv.red{color:var(--red)}.mv.yel{color:var(--yel)}.mv.grn{color:var(--grn)}
+.card{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1rem}
+.ch{padding:.875rem 1.25rem;border-bottom:.5px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ct{font-size:14px;font-weight:500}
+.cb{padding:1.25rem}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:8px 12px;color:var(--color-text-secondary);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap}
-td{padding:9px 12px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle}
+th{text-align:left;padding:8px 10px;color:var(--tx2);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:.5px solid var(--bd);white-space:nowrap;background:var(--bg2)}
+td{padding:7px 10px;border-bottom:.5px solid var(--bd);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--color-background-secondary)}
+tr:hover td{background:var(--bg2)}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
-.badge-red{background:#FAECE7;color:#993C1D}
-.badge-yellow{background:#FAEEDA;color:#854F0B}
-.badge-green{background:#EAF3DE;color:#3B6D11}
-.badge-blue{background:#E6F1FB;color:#185FA5}
-.badge-gray{background:#F1EFE8;color:#5F5E5A}
-.badge-purple{background:#EEEDFE;color:#534AB7}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-primary);transition:all 0.15s}
-.btn:hover{background:var(--color-background-secondary)}
-.btn-primary{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
-.btn-primary:hover{opacity:0.85}
-.btn-sm{padding:5px 10px;font-size:12px}
-input,select,textarea{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-size:13px;color:var(--color-text-primary);width:100%;font-family:inherit;outline:none}
-input:focus,select:focus,textarea:focus{border-color:var(--color-border-primary);box-shadow:0 0 0 2px rgba(0,0,0,0.06)}
-.filter-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
-.filter-row input,.filter-row select{width:auto;flex:1;min-width:120px}
-.progress-bar{background:var(--color-border-tertiary);border-radius:2px;height:6px;overflow:hidden;width:120px}
-.progress-fill{height:100%;border-radius:2px;transition:width 0.3s}
-.progress-fill.red{background:#D85A30}
-.progress-fill.yellow{background:#EF9F27}
-.progress-fill.green{background:#639922}
-.zone-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px}
-.zone-dot.red{background:#D85A30}
-.zone-dot.yellow{background:#EF9F27}
-.zone-dot.green{background:#639922}
-.detail-panel{position:fixed;right:0;top:0;height:100vh;width:420px;background:var(--color-background-primary);border-left:0.5px solid var(--color-border-tertiary);z-index:100;transform:translateX(100%);transition:transform 0.25s;overflow-y:auto;padding:1.5rem}
-.detail-panel.open{transform:translateX(0)}
-.detail-close{position:absolute;top:1.25rem;right:1.25rem;cursor:pointer;color:var(--color-text-secondary)}
-.detail-close:hover{color:var(--color-text-primary)}
+.br{background:var(--red-bg);color:var(--red-tx)}
+.by{background:var(--yel-bg);color:var(--yel-tx)}
+.bg{background:var(--grn-bg);color:var(--grn-tx)}
+.bb{background:var(--blu-bg);color:var(--blu-tx)}
+.bp{background:var(--pur-bg);color:var(--pur-tx)}
+.bgr{background:var(--gry-bg);color:var(--gry-tx)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:.5px solid var(--bd2);border-radius:var(--r);background:transparent;cursor:pointer;font-size:13px;color:var(--tx);transition:all .15s;font-family:var(--font)}
+.btn:hover{background:var(--bg2)}.btn:active{transform:scale(.98)}
+.btnp{background:var(--tx);color:var(--bg);border-color:var(--tx)}.btnp:hover{opacity:.85}
+.btns{padding:4px 9px;font-size:12px}
+input,select,textarea{background:var(--bg);border:.5px solid var(--bd2);border-radius:var(--r);padding:6px 9px;font-size:13px;color:var(--tx);font-family:var(--font);outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--tx2);box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
+.frow{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.frow input,.frow select{width:auto;flex:1;min-width:130px}
+.pb{background:var(--bd);border-radius:2px;height:5px;overflow:hidden;width:90px}
+.pf{height:100%;border-radius:2px}
+.pf.red{background:var(--red)}.pf.yel{background:var(--yel)}.pf.grn{background:var(--grn)}
+.zdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.zdot.red{background:var(--red)}.zdot.yel{background:var(--yel)}.zdot.grn{background:var(--grn)}
+.dp{position:fixed;right:0;top:0;height:100vh;width:440px;background:var(--bg);border-left:.5px solid var(--bd);z-index:300;transform:translateX(100%);transition:transform .25s;overflow-y:auto;padding:1.5rem}
+.dp.open{transform:translateX(0)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:200;display:none}
+.ov.open{display:block}
 .dl{display:grid;grid-template-columns:130px 1fr;gap:6px 12px;font-size:13px;margin-bottom:1rem}
-.dl dt{color:var(--color-text-secondary)}
-.dl dd{color:var(--color-text-primary);font-weight:500}
-.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0}
-.tab-row{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem}
-.tab{padding:8px 1rem;cursor:pointer;font-size:13px;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:all 0.15s}
-.tab:hover{color:var(--color-text-primary)}
-.tab.active{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary);font-weight:500}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.stone-row{padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
-.stone-row:last-child{border-bottom:none}
-.stone-row .stone-name{font-weight:500;margin-bottom:3px}
-.stone-row .stone-meta{color:var(--color-text-secondary);font-size:12px}
-.ai-panel{display:flex;flex-direction:column;height:calc(100vh - 200px)}
-.ai-messages{flex:1;overflow-y:auto;padding:1rem 0;display:flex;flex-direction:column;gap:12px;min-height:300px}
-.msg{max-width:85%;padding:10px 14px;border-radius:var(--border-radius-lg);font-size:13px;line-height:1.5}
-.msg-user{background:var(--color-text-primary);color:var(--color-background-primary);align-self:flex-end;border-bottom-right-radius:4px}
-.msg-ai{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);align-self:flex-start;border-bottom-left-radius:4px}
-.msg-loading{display:flex;gap:4px;align-items:center;padding:14px}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--color-text-secondary);animation:bounce 1.2s infinite}
-.dot:nth-child(2){animation-delay:0.2s}
-.dot:nth-child(3){animation-delay:0.4s}
+.dl dt{color:var(--tx2)}.dl dd{font-weight:500}
+.divider{border:none;border-top:.5px solid var(--bd);margin:1rem 0}
+.srow{padding:7px 0;border-bottom:.5px solid var(--bd);font-size:13px}
+.srow:last-child{border-bottom:none}
+.sn{font-weight:500;margin-bottom:2px}.sm{color:var(--tx2);font-size:12px}
+.ai-msgs{overflow-y:auto;padding:1rem 0;display:flex;flex-direction:column;gap:12px;min-height:280px;max-height:calc(100vh - 360px)}
+.msg{max-width:85%;padding:10px 14px;border-radius:var(--rl);font-size:13px;line-height:1.6;white-space:pre-wrap}
+.mu{background:var(--tx);color:var(--bg);align-self:flex-end;border-bottom-right-radius:4px}
+.ma{background:var(--bg2);border:.5px solid var(--bd);align-self:flex-start;border-bottom-left-radius:4px}
+.mld{display:flex;gap:4px;align-items:center;padding:14px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--tx2);animation:bounce 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.ai-input-row{display:flex;gap:8px;margin-top:12px}
-.ai-input-row input{flex:1}
-.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.quick-btn{padding:5px 10px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:transparent;cursor:pointer;font-size:12px;color:var(--color-text-secondary);transition:all 0.15s}
-.quick-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
-.upload-zone{border:1px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;color:var(--color-text-secondary);font-size:13px;cursor:pointer;transition:all 0.15s;margin-bottom:1rem}
-.upload-zone:hover{border-color:var(--color-border-primary);background:var(--color-background-secondary)}
-.edit-row{display:flex;gap:8px;align-items:center}
-.edit-row input{flex:1}
-.status-select{font-size:12px;padding:4px 8px;width:auto}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:99;display:none}
-.overlay.open{display:block}
-.modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;z-index:101;width:520px;max-width:90vw;max-height:80vh;overflow-y:auto}
+.air{display:flex;gap:8px;padding:1rem 0 .5rem;border-top:.5px solid var(--bd);margin-top:.75rem}
+.air input{flex:1}
+.qbtns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.qb{padding:5px 11px;border:.5px solid var(--bd2);border-radius:20px;background:transparent;cursor:pointer;font-size:12px;color:var(--tx2);transition:all .15s;font-family:var(--font)}
+.qb:hover{background:var(--bg2);color:var(--tx)}
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:400;display:none;align-items:center;justify-content:center}
+.mbg.open{display:flex}
+.modal{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);padding:1.5rem;width:520px;max-width:94vw;max-height:88vh;overflow-y:auto}
 .modal h3{font-size:16px;font-weight:500;margin-bottom:1rem}
-.form-group{margin-bottom:1rem}
-.form-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:5px;display:block}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--color-text-primary);color:var(--color-background-primary);padding:10px 16px;border-radius:var(--border-radius-md);font-size:13px;z-index:200;transform:translateY(100px);opacity:0;transition:all 0.3s}
-.toast.show{transform:translateY(0);opacity:1}
-.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-.tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:11px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)}
+.fg{margin-bottom:1rem}
+.fl{font-size:12px;color:var(--tx2);margin-bottom:5px;display:block}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--tx);color:var(--bg);padding:10px 20px;border-radius:var(--r);font-size:13px;z-index:500;opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:11px;background:var(--bg2);color:var(--tx2);border:.5px solid var(--bd)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.dclose{position:absolute;top:1.25rem;right:1.25rem;cursor:pointer;color:var(--tx2);border:none;background:none;font-size:18px}
+.dclose:hover{color:var(--tx)}
+.tw{overflow-x:auto}
+.sp-view{border:.5px solid var(--bd);border-radius:var(--rl);margin-bottom:1rem;overflow:hidden}
+.sp-header{background:var(--pur-bg);color:var(--pur-tx);padding:.75rem 1.25rem;font-weight:500;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.sp-print-btn{font-size:12px;padding:4px 10px}
+@media print{.sidebar,.frow,.sp-print-btn,.btn,.btns{display:none!important}.app{grid-template-columns:1fr}.sp-view{break-inside:avoid}}
+@media(max-width:700px){.app{grid-template-columns:1fr}.sidebar{display:none}.two{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<h2 class="sr-only">Jewellery Production Tracker — order management dashboard</h2>
-
 <div class="app">
 <nav class="sidebar">
   <div class="logo">
-    <div class="logo-title"><i class="ti ti-diamond" aria-hidden="true"></i> JewelTrack</div>
+    <div class="logo-title"><i class="ti ti-diamond"></i> JewelTrack</div>
     <div class="logo-sub">Production Management</div>
   </div>
-  <div class="nav-section">Overview</div>
-  <div class="nav-item active" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard</div>
-  <div class="nav-section">Orders</div>
-  <div class="nav-item" onclick="showPage('orders')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Order Master</div>
-  <div class="nav-item" onclick="showPage('jobs')"><i class="ti ti-tool" aria-hidden="true"></i> Job Master</div>
-  <div class="nav-item" onclick="showPage('pool')"><i class="ti ti-database-import" aria-hidden="true"></i> Order Pool</div>
-  <div class="nav-section">Stones</div>
-  <div class="nav-item" onclick="showPage('stone_order')"><i class="ti ti-triangle" aria-hidden="true"></i> Stone Orders</div>
-  <div class="nav-item" onclick="showPage('stone_purchase')"><i class="ti ti-receipt" aria-hidden="true"></i> Stone Purchase</div>
-  <div class="nav-section">Workshop</div>
-  <div class="nav-item" onclick="showPage('repair')"><i class="ti ti-bandage" aria-hidden="true"></i> Repair Jobs</div>
-  <div class="nav-section">Assistant</div>
-  <div class="nav-item" onclick="showPage('ai')"><i class="ti ti-sparkles" aria-hidden="true"></i> AI Assistant</div>
+  <div class="nav-sec">Overview</div>
+  <div class="nav-item active" data-page="dashboard"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+  <div class="nav-sec">Orders</div>
+  <div class="nav-item" data-page="orders"><i class="ti ti-clipboard-list"></i> Order Master</div>
+  <div class="nav-item" data-page="jobs"><i class="ti ti-tool"></i> Job Master</div>
+  <div class="nav-item" data-page="pool"><i class="ti ti-database-import"></i> Order Pool</div>
+  <div class="nav-sec">Stones</div>
+  <div class="nav-item" data-page="stone_order"><i class="ti ti-triangle"></i> Stone Orders</div>
+  <div class="nav-item" data-page="stone_purchase"><i class="ti ti-receipt"></i> Stone Purchase</div>
+  <div class="nav-sec">Workshop</div>
+  <div class="nav-item" data-page="repair"><i class="ti ti-bandage"></i> Repair Jobs</div>
+  <div class="nav-sec">Assistant</div>
+  <div class="nav-item" data-page="ai"><i class="ti ti-sparkles"></i> AI Assistant</div>
 </nav>
-
 <main class="main">
 
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
-  <div class="page-header">
-    <div class="page-title">Dashboard</div>
-    <div class="page-sub">Last updated: 28/5/2026</div>
-  </div>
+  <div class="ph"><div class="pt">Dashboard</div><div class="ps" id="dash-updated"></div></div>
   <div class="metrics" id="dash-metrics"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-    <div class="card">
-      <div class="card-header"><span class="card-title">Orders by zone</span></div>
-      <div class="card-body" id="dash-zones"></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">Stone delivery status</span></div>
-      <div class="card-body" id="dash-stones"></div>
-    </div>
+  <div class="two">
+    <div class="card"><div class="ch"><span class="ct">Orders by zone</span></div><div class="cb" id="dash-zones"></div></div>
+    <div class="card"><div class="ch"><span class="ct">Stone delivery status</span></div><div class="cb" id="dash-stones"></div></div>
   </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">Active orders</span></div>
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>Order no</th><th>Due date</th><th>Zone</th><th>Progress</th><th>Balance</th><th>Days elapsed</th></tr></thead>
-      <tbody id="dash-orders"></tbody>
-    </table>
-    </div>
-  </div>
+  <div class="card"><div class="ch"><span class="ct">All orders</span></div><div class="tw">
+    <table><thead><tr><th>Order no</th><th>Due date</th><th>Zone</th><th>Progress</th><th>Finished</th><th>Balance</th><th>Days</th></tr></thead>
+    <tbody id="dash-orders"></tbody></table>
+  </div></div>
 </div>
 
 <!-- ORDER MASTER -->
 <div id="page-orders" class="page">
-  <div class="page-header">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div class="page-title">Order Master</div>
-        <div class="page-sub">Manage and track all production orders</div>
-      </div>
-      <button class="btn btn-primary" onclick="openAddOrder()"><i class="ti ti-plus" aria-hidden="true"></i> New order</button>
-    </div>
+  <div class="ph"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+    <div><div class="pt">Order Master</div><div class="ps">Manage production orders</div></div>
+    <button class="btn btnp" onclick="openAddOrder()"><i class="ti ti-plus"></i> New order</button>
+  </div></div>
+  <div class="frow">
+    <input type="text" id="order-search" placeholder="Search order no..." oninput="renderOrders()">
+    <select id="order-zone-f" onchange="renderOrders()"><option value="">All zones</option><option value="RED">Red</option><option value="YELLOW">Yellow</option><option value="GREEN">Green</option></select>
   </div>
-  <div class="filter-row">
-    <input type="text" id="order-search" placeholder="Search order no, factory..." oninput="renderOrders()">
-    <select id="order-zone-filter" onchange="renderOrders()">
-      <option value="">All zones</option>
-      <option value="RED">Red</option>
-      <option value="YELLOW">Yellow</option>
-      <option value="GREEN">Green</option>
-    </select>
-  </div>
-  <div class="card">
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>Order date</th><th>Order no</th><th>Due date</th><th>Zone</th><th>Qty</th><th>Finished</th><th>Balance</th><th>Progress</th><th>Actions</th></tr></thead>
-      <tbody id="orders-body"></tbody>
-    </table>
-    </div>
-  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Order date</th><th>Order no</th><th>Due date</th><th>Zone</th><th>Qty</th><th>Finished</th><th>Balance</th><th>Progress</th><th></th></tr></thead>
+    <tbody id="orders-body"></tbody>
+  </table></div></div>
 </div>
 
 <!-- JOB MASTER -->
 <div id="page-jobs" class="page">
-  <div class="page-header">
-    <div class="page-title">Job Master</div>
-    <div class="page-sub">Individual job items per order</div>
+  <div class="ph"><div class="pt">Job Master</div><div class="ps">Individual job items — edit Repair and Received inline</div></div>
+  <div class="frow">
+    <input type="text" id="job-search" placeholder="Search order, article, type..." oninput="renderJobs()">
+    <select id="job-type-f" onchange="renderJobs()"><option value="">All types</option></select>
+    <select id="job-fin-f" onchange="renderJobs()"><option value="">All status</option><option value="finished">Finished</option><option value="wip">In progress</option></select>
   </div>
-  <div class="filter-row">
-    <input type="text" id="job-search" placeholder="Search order no, article, type..." oninput="renderJobs()">
-    <select id="job-stone-filter" onchange="renderJobs()">
-      <option value="">Stone status: all</option>
-      <option value="OK">Stone complete</option>
-      <option value="">Pending stone</option>
-    </select>
-    <select id="job-finish-filter" onchange="renderJobs()">
-      <option value="">Finish: all</option>
-      <option value="finished">Finished</option>
-      <option value="wip">In progress</option>
-    </select>
-  </div>
-  <div class="card">
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>#</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Metal</th><th>Qty</th><th>Balance</th><th>Stone</th><th>Finish date</th><th>Actions</th></tr></thead>
-      <tbody id="jobs-body"></tbody>
-    </table>
-    </div>
-  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>#</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Metal</th><th>Qty</th><th>Repair</th><th>Received</th><th>Balance</th><th>Stone</th><th>Finish date</th><th></th></tr></thead>
+    <tbody id="jobs-body"></tbody>
+  </table></div></div>
 </div>
 
 <!-- ORDER POOL -->
 <div id="page-pool" class="page">
-  <div class="page-header">
-    <div class="page-title">Order Pool</div>
-    <div class="page-sub">Source data from production system — paste from Excel to update</div>
-  </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title"><i class="ti ti-database-import" aria-hidden="true"></i> Import from Excel</span></div>
-    <div class="card-body">
-      <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">Paste Excel content (tab-separated) into the field below. The system will parse and import Order Pool data automatically.</p>
-      <textarea id="pool-paste" rows="6" placeholder="Paste Excel data here (Ctrl+V)..." style="font-family:var(--font-mono);font-size:12px;margin-bottom:0.75rem"></textarea>
+  <div class="ph"><div class="pt">Order Pool</div><div class="ps">Import from Google Sheet — copy all rows from ORDER POOL tab and paste below</div></div>
+  <div class="card"><div class="ch"><span class="ct"><i class="ti ti-file-import"></i> Import from Excel / Google Sheet</span></div>
+    <div class="cb">
+      <p style="font-size:13px;color:var(--tx2);margin-bottom:.75rem">Select all data rows in ORDER POOL sheet (Ctrl+A) → Copy (Ctrl+C) → Paste below</p>
+      <textarea id="pool-paste" rows="5" placeholder="Paste tab-separated data here..." style="font-family:var(--mono);font-size:12px;margin-bottom:.75rem"></textarea>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" onclick="importPoolData()"><i class="ti ti-upload" aria-hidden="true"></i> Import data</button>
-        <button class="btn" onclick="document.getElementById('pool-paste').value=''"><i class="ti ti-x" aria-hidden="true"></i> Clear</button>
+        <button class="btn btnp" onclick="importPoolData()"><i class="ti ti-upload"></i> Import</button>
+        <button class="btn" onclick="document.getElementById('pool-paste').value=''"><i class="ti ti-x"></i> Clear</button>
       </div>
     </div>
   </div>
   <div class="card">
-    <div class="card-header">
-      <span class="card-title">Current pool data</span>
-      <span id="pool-count" style="font-size:12px;color:var(--color-text-secondary)"></span>
-    </div>
-    <div class="filter-row" style="padding:0 1.25rem;margin-bottom:0">
-      <input type="text" id="pool-search" placeholder="Search article, type, stone..." oninput="renderPool()">
-    </div>
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>Order no</th><th>Type</th><th>Article</th><th>Metal</th><th>Size</th><th>Qty</th><th>Stone type</th><th>Stone dia</th><th>Total stones</th><th>Item key</th></tr></thead>
+    <div class="ch"><span class="ct">Current pool data</span><span id="pool-count" style="font-size:12px;color:var(--tx2)"></span></div>
+    <div style="padding:0 1.25rem .75rem"><input type="text" id="pool-search" placeholder="Search..." oninput="renderPool()" style="max-width:280px"></div>
+    <div class="tw"><table>
+      <thead><tr><th>Order no</th><th>Type</th><th>Article</th><th>Metal</th><th>Avg wt</th><th>Total wt</th><th>Wt purity</th><th>Size</th><th>Qty</th><th>Stone type</th><th>Stone sizing</th><th>Stone dia</th><th>Stone/pc</th><th>Total stones</th><th>Item key</th></tr></thead>
       <tbody id="pool-body"></tbody>
-    </table>
-    </div>
+    </table></div>
   </div>
 </div>
 
 <!-- STONE ORDER -->
 <div id="page-stone_order" class="page">
-  <div class="page-header">
-    <div class="page-title">Stone Orders</div>
-    <div class="page-sub">Track stone procurement per item</div>
+  <div class="ph"><div class="pt">Stone Orders</div><div class="ps">Edit Supplier, Ordered Date, and Received inline</div></div>
+  <div class="frow">
+    <input type="text" id="so-search" placeholder="Search stone, order..." oninput="renderStoneOrders()">
+    <select id="so-complete-f" onchange="renderStoneOrders()"><option value="">All status</option><option value="FALSE">Pending</option><option value="TRUE">Complete</option></select>
+    <select id="so-supplier-f" onchange="renderStoneOrders()"><option value="">All suppliers</option></select>
   </div>
-  <div class="filter-row">
-    <input type="text" id="so-search" placeholder="Search item key, stone type, supplier..." oninput="renderStoneOrders()">
-    <select id="so-complete-filter" onchange="renderStoneOrders()">
-      <option value="">All status</option>
-      <option value="true">Complete</option>
-      <option value="false">Pending</option>
-    </select>
-    <select id="so-supplier-filter" onchange="renderStoneOrders()">
-      <option value="">All suppliers</option>
-    </select>
-  </div>
-  <div class="card">
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total</th><th>Supplier</th><th>Received</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody id="so-body"></tbody>
-    </table>
-    </div>
-  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total qty</th><th>Supplier</th><th>Ordered date</th><th>Received</th><th>Balance</th><th>Complete</th><th>Rcvd date</th><th></th></tr></thead>
+    <tbody id="so-body"></tbody>
+  </table></div></div>
 </div>
 
 <!-- STONE PURCHASE -->
 <div id="page-stone_purchase" class="page">
-  <div class="page-header">
-    <div class="page-title">Stone Purchase</div>
-    <div class="page-sub">Orders placed with stone suppliers</div>
-  </div>
-  <div class="filter-row">
-    <input type="text" id="sp-search" placeholder="Search supplier, stone, order..." oninput="renderStonePurchase()">
-    <select id="sp-status-filter" onchange="renderStonePurchase()">
-      <option value="">All status</option>
-      <option value="PENDING RECEIVE">Pending</option>
-      <option value="PARTIAL RECEIVE">Partial</option>
-      <option value="RECEIVED">Received</option>
-    </select>
-    <select id="sp-supplier-filter" onchange="renderStonePurchase()">
+  <div class="ph"><div class="pt">Stone Purchase</div><div class="ps">Filter by supplier to view and capture for ordering</div></div>
+  <div class="frow">
+    <select id="sp-supplier-f" onchange="renderStonePurchase()" style="max-width:200px">
       <option value="">All suppliers</option>
     </select>
+    <select id="sp-status-f" onchange="renderStonePurchase()"><option value="">All status</option><option value="PENDING RECEIVE">Pending</option><option value="PARTIAL RECEIVE">Partial</option><option value="RECEIVED">Received</option></select>
+    <input type="text" id="sp-search" placeholder="Search stone, order..." oninput="renderStonePurchase()">
+    <button class="btn" onclick="window.print()"><i class="ti ti-printer"></i> Print</button>
   </div>
-  <div class="card">
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>Supplier</th><th>Order no</th><th>Item type</th><th>Stone type</th><th>Dia</th><th>Total</th><th>Balance</th><th>Ordered</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody id="sp-body"></tbody>
-    </table>
-    </div>
-  </div>
+  <div id="sp-content"></div>
 </div>
 
 <!-- REPAIR -->
 <div id="page-repair" class="page">
-  <div class="page-header">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div class="page-title">Repair Jobs</div>
-        <div class="page-sub">Track repair and rework items</div>
-      </div>
-      <button class="btn btn-primary" onclick="openAddRepair()"><i class="ti ti-plus" aria-hidden="true"></i> Log repair</button>
-    </div>
-  </div>
-  <div class="card">
-    <div style="overflow-x:auto">
-    <table>
-      <thead><tr><th>Sent date</th><th>Ref job</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Qty</th><th>Factory</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody id="repair-body"></tbody>
-    </table>
-    </div>
-  </div>
-  <div class="card" style="margin-top:1rem">
-    <div class="card-header"><span class="card-title">Repair reason types</span></div>
-    <div class="card-body" style="display:flex;gap:8px;flex-wrap:wrap">
-      <span class="badge badge-red">CROOK</span>
-      <span class="badge badge-yellow">POROSITY</span>
-      <span class="badge badge-blue">DEFORM</span>
-      <span class="badge badge-gray">POLISH</span>
-    </div>
-  </div>
+  <div class="ph"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+    <div><div class="pt">Repair Jobs</div><div class="ps">Edit Ref. Job, Repair Reason, and Received Date inline</div></div>
+    <button class="btn btnp" onclick="openAddRepair()"><i class="ti ti-plus"></i> Log repair</button>
+  </div></div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Sent date</th><th>Ref. job</th><th>Item key</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Qty</th><th>Factory</th><th>Repair status</th><th>Repair reason</th><th>Received date</th></tr></thead>
+    <tbody id="repair-body"></tbody>
+  </table></div></div>
 </div>
 
-<!-- AI ASSISTANT -->
+<!-- AI -->
 <div id="page-ai" class="page">
-  <div class="page-header">
-    <div class="page-title">AI Assistant</div>
-    <div class="page-sub">Ask anything about your orders, stones, or production status</div>
-  </div>
-  <div class="card" style="height:calc(100vh - 200px);display:flex;flex-direction:column">
-    <div class="card-body" style="flex:1;display:flex;flex-direction:column;overflow:hidden;padding-bottom:0">
-      <div class="quick-btns">
-        <button class="quick-btn" onclick="askAI('Which orders are in the RED zone?')">Red zone orders</button>
-        <button class="quick-btn" onclick="askAI('What stones are still pending delivery?')">Pending stones</button>
-        <button class="quick-btn" onclick="askAI('Summarize the status of order 1096')">Order 1096 status</button>
-        <button class="quick-btn" onclick="askAI('Which items are fully finished and ready?')">Finished items</button>
-        <button class="quick-btn" onclick="askAI('What is the total stone balance from Vanyaa?')">Vanyaa balance</button>
-      </div>
-      <div class="ai-messages" id="ai-messages">
-        <div class="msg msg-ai">Hello! I have access to your current production data including orders, job items, stone orders, and purchase status. Ask me anything about your production workflow.</div>
-      </div>
-      <div style="border-top:0.5px solid var(--color-border-tertiary);padding:1rem 0 0.5rem">
-        <div class="ai-input-row">
-          <input type="text" id="ai-input" placeholder="Ask about orders, stones, delivery status..." onkeydown="if(event.key==='Enter')sendAIMessage()">
-          <button class="btn btn-primary" onclick="sendAIMessage()"><i class="ti ti-send" aria-hidden="true"></i></button>
-        </div>
-      </div>
+  <div class="ph"><div class="pt">AI Assistant</div><div class="ps">Ask about orders, stones, production status</div></div>
+  <div class="card"><div class="cb" style="display:flex;flex-direction:column">
+    <div class="qbtns">
+      <button class="qb" onclick="sendQuick('Which orders are in the RED zone?')">Red zone orders</button>
+      <button class="qb" onclick="sendQuick('What stones are still pending delivery?')">Pending stones</button>
+      <button class="qb" onclick="sendQuick('Summarize order 1096 in detail')">Order 1096</button>
+      <button class="qb" onclick="sendQuick('Which job items are fully finished?')">Finished items</button>
+      <button class="qb" onclick="sendQuick('Total stone balance from Vanyaa?')">Vanyaa balance</button>
     </div>
-  </div>
+    <div class="ai-msgs" id="ai-msgs">
+      <div class="msg ma">Hello! I have access to your production data. Ask me anything about orders, stones, or production status.</div>
+    </div>
+    <div class="air">
+      <input type="text" id="ai-input" placeholder="Ask about orders, stones..." onkeydown="if(event.key==='Enter')submitAI()">
+      <button class="btn btnp" onclick="submitAI()"><i class="ti ti-send"></i></button>
+    </div>
+  </div></div>
 </div>
 
 </main>
 </div>
 
-<!-- Detail panel overlay -->
-<div class="overlay" id="overlay" onclick="closeDetail()"></div>
-<div class="detail-panel" id="detail-panel">
-  <div class="detail-close" onclick="closeDetail()"><i class="ti ti-x" style="font-size:18px"></i></div>
-  <div id="detail-content"></div>
+<div class="ov" id="ov" onclick="closeDetail()"></div>
+<div class="dp" id="dp"><button class="dclose" onclick="closeDetail()"><i class="ti ti-x"></i></button><div id="dp-content"></div></div>
+<div class="mbg" id="mbg" onclick="e=>{if(e.target===document.getElementById('mbg'))closeModal()}">
+  <div class="modal"><div id="modal-content"></div></div>
 </div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Modal -->
-<div class="overlay" id="modal-overlay" style="display:none" onclick="closeModal()"></div>
-<div class="modal" id="modal" style="display:none">
-  <div id="modal-content"></div>
-</div>
-
 <script>
-const SHEET_ID = '1LgWimLnI2m_N16FBrxJ0L5qdcZqKCoUOM-_b0TRnd7A';
+const SUPPLIERS = ['Vanyaa','Ideal','PinThai','PSG','Juluur'];
 
-const RAW_DATA = {
-  orders: [
-    {orderDate:'8/4/2026',orderNo:'SM872884BЭ1',progress:'',dueDate:'7/6/2026',qty:1,daysElapsed:50,zone:'RED',finished:0,repairQty:0,balance:1,factory:'PKL',finishDate:''},
-    {orderDate:'8/4/2026',orderNo:'SM8728841',progress:'',dueDate:'7/6/2026',qty:2,daysElapsed:50,zone:'RED',finished:0,repairQty:0,balance:2,factory:'PKL',finishDate:''},
-    {orderDate:'9/4/2026',orderNo:'JD00-000082',progress:'68.75%',dueDate:'8/6/2026',qty:16,daysElapsed:49,zone:'RED',finished:11,repairQty:0,balance:5,factory:'PKL',finishDate:''},
-    {orderDate:'9/4/2026',orderNo:'JD00-000084',progress:'31.43%',dueDate:'8/6/2026',qty:35,daysElapsed:49,zone:'RED',finished:11,repairQty:0,balance:24,factory:'PKL',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',progress:'24.56%',dueDate:'29/6/2026',qty:57,daysElapsed:28,zone:'YELLOW',finished:14,repairQty:0,balance:43,factory:'PKL',finishDate:''},
-    {orderDate:'14/5/2026',orderNo:'SP770780BП1',progress:'',dueDate:'13/7/2026',qty:1,daysElapsed:14,zone:'GREEN',finished:0,repairQty:0,balance:1,factory:'PKL',finishDate:''},
-    {orderDate:'28/5/2026',orderNo:'JD00-000131',progress:'',dueDate:'27/7/2026',qty:1,daysElapsed:0,zone:'GREEN',finished:0,repairQty:0,balance:1,factory:'PKL',finishDate:''}
+const SEED = {
+  orders:[
+    {orderDate:'8/4/2026',orderNo:'SM872884BЭ1',progress:'',dueDate:'7/6/2026',qty:1,daysElapsed:50,zone:'RED',finished:0,balance:1,factory:'PKL',finishDate:''},
+    {orderDate:'8/4/2026',orderNo:'SM8728841',progress:'',dueDate:'7/6/2026',qty:2,daysElapsed:50,zone:'RED',finished:0,balance:2,factory:'PKL',finishDate:''},
+    {orderDate:'9/4/2026',orderNo:'JD00-000082',progress:'68.75%',dueDate:'8/6/2026',qty:16,daysElapsed:49,zone:'RED',finished:11,balance:5,factory:'PKL',finishDate:''},
+    {orderDate:'9/4/2026',orderNo:'JD00-000084',progress:'31.43%',dueDate:'8/6/2026',qty:35,daysElapsed:49,zone:'RED',finished:11,balance:24,factory:'PKL',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',progress:'24.56%',dueDate:'29/6/2026',qty:57,daysElapsed:28,zone:'YELLOW',finished:14,balance:43,factory:'PKL',finishDate:''},
+    {orderDate:'14/5/2026',orderNo:'SP770780BП1',progress:'',dueDate:'13/7/2026',qty:1,daysElapsed:14,zone:'GREEN',finished:0,balance:1,factory:'PKL',finishDate:''},
+    {orderDate:'28/5/2026',orderNo:'JD00-000131',progress:'',dueDate:'27/7/2026',qty:1,daysElapsed:0,zone:'GREEN',finished:0,balance:1,factory:'PKL',finishDate:''}
   ],
-  jobs: [
-    {orderDate:'8/4/2026',orderNo:'SM872884BЭ1',no:'01',itemKey:'SM872884BЭ1-kl05220418-45-Topaz Princess-01',itemType:'Necklace',article:'kl05220418',size:'45',qty:1,repair:'',received:'',balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'8/4/2026',orderNo:'SM8728841',no:'01',itemKey:'SM8728841-kl05220418-45-Chrmd Pear-01',itemType:'Necklace',article:'kl05220418',size:'45',qty:2,repair:'',received:'',balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'9/4/2026',orderNo:'JD00-000082',no:'01',itemKey:'JD00-000082-br04184700-17-Topaz Rnd-01',itemType:'Bracelet',article:'br04184700',size:'17',qty:8,repair:'',received:5,balance:3,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'9/4/2026',orderNo:'JD00-000082',no:'02',itemKey:'JD00-000082-br04184700-17-Lab Ruby Rnd-01',itemType:'Bracelet',article:'br04184700',size:'17',qty:8,repair:'',received:6,balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'01',itemKey:'JD00-000084-kl03210504-4035-Chrmd Pear-01',itemType:'Necklace',article:'kl03210504',size:'4035',qty:15,repair:'',received:'',balance:15,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'02',itemKey:'JD00-000084-kc04210404-16-Topaz Ov-01',itemType:'Ring',article:'kc04210404',size:'16',qty:2,repair:'',received:2,balance:0,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'03',itemKey:'JD00-000084-kc04210404-16.5-Topaz Ov-01',itemType:'Ring',article:'kc04210404',size:'16.5',qty:3,repair:'',received:3,balance:0,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'04',itemKey:'JD00-000084-kc04210460-16-Lab Sapphire Pear-01',itemType:'Ring',article:'kc04210460',size:'16',qty:2,repair:'',received:1,balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'05',itemKey:'JD00-000084-kc04210460-16.5-Lab Sapphire Pear-01',itemType:'Ring',article:'kc04210460',size:'16.5',qty:3,repair:'',received:2,balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'JD00-000084',no:'06',itemKey:'JD00-000084-ps08210451-Tanzanite Rnd-00',itemType:'Studs',article:'ps08210451',size:'',qty:5,repair:'',received:'',balance:5,metal:'White gold (585)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'JD00-000084',no:'07',itemKey:'JD00-000084-ps11210456-Lab Emerald Rnd-00',itemType:'Studs',article:'ps11210456',size:'',qty:5,repair:'',received:3,balance:2,metal:'White gold (585)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'01',itemKey:'1096-kl03210504-4035-Chromd Pear-01',itemType:'Necklace',article:'kl03210504',size:'4035',qty:2,repair:'',received:'',balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'02',itemKey:'1096-kl11231161-40-Topaz Hrt-01',itemType:'Necklace',article:'kl11231161',size:'40',qty:4,repair:'',received:'',balance:4,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'03',itemKey:'1096-kc03220413-17-Citrine Ok-01',itemType:'Ring',article:'kc03220413',size:'17',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'04',itemKey:'1096-kc04220405-17-Chromd Ov-01',itemType:'Ring',article:'kc04220405',size:'17',qty:2,repair:'',received:'',balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'05',itemKey:'1096-kc04220405-17.5-Chromd Ov-01',itemType:'Ring',article:'kc04220405',size:'17.5',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'06',itemKey:'1096-kc04220422-17.5-Topaz Princess-01',itemType:'Ring',article:'kc04220422',size:'17.5',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'07',itemKey:'1096-kc08241151-16.5-Topaz Ok-01',itemType:'Ring',article:'kc08241151',size:'16.5',qty:1,repair:'',received:1,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'08',itemKey:'1096-kc08241151-17-Topaz Ok-01',itemType:'Ring',article:'kc08241151',size:'17',qty:2,repair:'',received:2,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'09',itemKey:'1096-kc09200455-18-Chromd Pear-01',itemType:'Ring',article:'kc09200455',size:'18',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'10',itemKey:'1096-kc09251201-16-Lab Emerald Rnd-01',itemType:'Ring',article:'kc09251201',size:'16',qty:5,repair:'',received:'',balance:5,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'11',itemKey:'1096-kc09251201-16.5-Lab Emerald Rnd-01',itemType:'Ring',article:'kc09251201',size:'16.5',qty:1,repair:'',received:1,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'12',itemKey:'1096-kc09251201-17-Lab Emerald Rnd-01',itemType:'Ring',article:'kc09251201',size:'17',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'13',itemKey:'1096-kc09251204-17-Topaz Ok-01',itemType:'Ring',article:'kc09251204',size:'17',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'14',itemKey:'1096-kc09251205-16-Topaz Rnd-01',itemType:'Ring',article:'kc09251205',size:'16',qty:1,repair:'',received:1,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'15',itemKey:'1096-kc09251205-17-Topaz Rnd-01',itemType:'Ring',article:'kc09251205',size:'17',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'16',itemKey:'1096-kc11102400-16-Tanzanite Rnd-01',itemType:'Ring',article:'kc11102400',size:'16',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'17',itemKey:'1096-kc11102400-17-Tanzanite Rnd-01',itemType:'Ring',article:'kc11102400',size:'17',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'18',itemKey:'1096-pd04210460-Lab Emerald Pear-00',itemType:'Pendant',article:'pd04210460',size:'',qty:1,repair:'',received:1,balance:0,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'19',itemKey:'1096-pd11231154-Amethyst Pear-00',itemType:'Pendant',article:'pd11231154',size:'',qty:2,repair:'',received:2,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'20',itemKey:'1096-ps03210460-Chromd Pear-00',itemType:'Studs',article:'ps03210460',size:'',qty:4,repair:'',received:'',balance:4,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'21',itemKey:'1096-ps06160700-Tanzanite Rnd-00',itemType:'Studs',article:'ps06160700',size:'',qty:4,repair:'',received:3,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'22',itemKey:'1096-ps09200401-Tanzanite Rnd-00',itemType:'Studs',article:'ps09200401',size:'',qty:3,repair:'',received:'',balance:3,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'23',itemKey:'1096-ps09251201-Lab Emerald Rnd-00',itemType:'Studs',article:'ps09251201',size:'',qty:2,repair:'',received:'',balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'24',itemKey:'1096-ps11102400-Citrine Rnd-00',itemType:'Studs',article:'ps11102400',size:'',qty:2,repair:'',received:'',balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'25',itemKey:'1096-ps11102400-Chromd Rnd-00',itemType:'Studs',article:'ps11102400',size:'',qty:8,repair:'',received:'',balance:8,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'26',itemKey:'1096-ps11102400-Topaz Rnd-00',itemType:'Studs',article:'ps11102400',size:'',qty:2,repair:'',received:1,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''},
-    {orderDate:'30/4/2026',orderNo:'1096',no:'27',itemKey:'1096-sg04202511-Chromd Pear-00',itemType:'Earrings',article:'sg04202511',size:'',qty:2,repair:'',received:2,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:'28/5/2026'},
-    {orderDate:'14/5/2026',orderNo:'SP770780BП1',no:'01',itemKey:'SP770780BП1-pd04202512-Tanzanite Pear-00',itemType:'Pendant',article:'pd04202512',size:'',qty:1,repair:'',received:'',balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'',repairDate:'',finishDate:''},
-    {orderDate:'28/5/2026',orderNo:'JD00-000131',no:'01',itemKey:'JD00-000131-kc08241151-17.25-Topaz Ok-01',itemType:'Ring',article:'kc08241151',size:'17.25',qty:1,repair:'',received:'',balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',repairDate:'',finishDate:''}
+  jobs:[
+    {orderDate:'8/4/2026',orderNo:'SM872884BЭ1',no:'01',itemKey:'SM872884BЭ1-kl05220418-45-Topaz Princess-01',itemType:'Necklace',article:'kl05220418',size:'45',qty:1,repair:0,received:0,balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'8/4/2026',orderNo:'SM8728841',no:'01',itemKey:'SM8728841-kl05220418-45-Chrmd Pear-01',itemType:'Necklace',article:'kl05220418',size:'45',qty:2,repair:0,received:0,balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'9/4/2026',orderNo:'JD00-000082',no:'01',itemKey:'JD00-000082-br04184700-17-Topaz Rnd-01',itemType:'Bracelet',article:'br04184700',size:'17',qty:8,repair:0,received:5,balance:3,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'9/4/2026',orderNo:'JD00-000082',no:'02',itemKey:'JD00-000082-br04184700-17-Lab Ruby Rnd-01',itemType:'Bracelet',article:'br04184700',size:'17',qty:8,repair:0,received:6,balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'01',itemKey:'JD00-000084-kl03210504-4035-Chrmd Pear-01',itemType:'Necklace',article:'kl03210504',size:'4035',qty:15,repair:0,received:0,balance:15,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'02',itemKey:'JD00-000084-kc04210404-16-Topaz Ov-01',itemType:'Ring',article:'kc04210404',size:'16',qty:2,repair:0,received:2,balance:0,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'03',itemKey:'JD00-000084-kc04210404-16.5-Topaz Ov-01',itemType:'Ring',article:'kc04210404',size:'16.5',qty:3,repair:0,received:3,balance:0,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'04',itemKey:'JD00-000084-kc04210460-16-Lab Sapphire Pear-01',itemType:'Ring',article:'kc04210460',size:'16',qty:2,repair:0,received:1,balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'9/4/2026',orderNo:'JD00-000084',no:'05',itemKey:'JD00-000084-kc04210460-16.5-Lab Sapphire Pear-01',itemType:'Ring',article:'kc04210460',size:'16.5',qty:3,repair:0,received:2,balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'JD00-000084',no:'06',itemKey:'JD00-000084-ps08210451-Tanzanite Rnd-00',itemType:'Studs',article:'ps08210451',size:'',qty:5,repair:0,received:0,balance:5,metal:'White gold (585)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'JD00-000084',no:'07',itemKey:'JD00-000084-ps11210456-Lab Emerald Rnd-00',itemType:'Studs',article:'ps11210456',size:'',qty:5,repair:0,received:3,balance:2,metal:'White gold (585)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'01',itemKey:'1096-kl03210504-4035-Chromd Pear-01',itemType:'Necklace',article:'kl03210504',size:'4035',qty:2,repair:0,received:0,balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'02',itemKey:'1096-kl11231161-40-Topaz Hrt-01',itemType:'Necklace',article:'kl11231161',size:'40',qty:4,repair:0,received:0,balance:4,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'03',itemKey:'1096-kc03220413-17-Citrine Ok-01',itemType:'Ring',article:'kc03220413',size:'17',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'04',itemKey:'1096-kc04220405-17-Chromd Ov-01',itemType:'Ring',article:'kc04220405',size:'17',qty:2,repair:0,received:0,balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'05',itemKey:'1096-kc04220405-17.5-Chromd Ov-01',itemType:'Ring',article:'kc04220405',size:'17.5',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'06',itemKey:'1096-kc04220422-17.5-Topaz Princess-01',itemType:'Ring',article:'kc04220422',size:'17.5',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'07',itemKey:'1096-kc08241151-16.5-Topaz Ok-01',itemType:'Ring',article:'kc08241151',size:'16.5',qty:1,repair:0,received:1,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'08',itemKey:'1096-kc08241151-17-Topaz Ok-01',itemType:'Ring',article:'kc08241151',size:'17',qty:2,repair:0,received:2,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'09',itemKey:'1096-kc09200455-18-Chromd Pear-01',itemType:'Ring',article:'kc09200455',size:'18',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'10',itemKey:'1096-kc09251201-16-Lab Emerald Rnd-01',itemType:'Ring',article:'kc09251201',size:'16',qty:5,repair:0,received:0,balance:5,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'11',itemKey:'1096-kc09251201-16.5-Lab Emerald Rnd-01',itemType:'Ring',article:'kc09251201',size:'16.5',qty:1,repair:0,received:1,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'12',itemKey:'1096-kc09251201-17-Lab Emerald Rnd-01',itemType:'Ring',article:'kc09251201',size:'17',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'13',itemKey:'1096-kc09251204-17-Topaz Ok-01',itemType:'Ring',article:'kc09251204',size:'17',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'14',itemKey:'1096-kc09251205-16-Topaz Rnd-01',itemType:'Ring',article:'kc09251205',size:'16',qty:1,repair:0,received:1,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'15',itemKey:'1096-kc09251205-17-Topaz Rnd-01',itemType:'Ring',article:'kc09251205',size:'17',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'16',itemKey:'1096-kc11102400-16-Tanzanite Rnd-01',itemType:'Ring',article:'kc11102400',size:'16',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'17',itemKey:'1096-kc11102400-17-Tanzanite Rnd-01',itemType:'Ring',article:'kc11102400',size:'17',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'18',itemKey:'1096-pd04210460-Lab Emerald Pear-00',itemType:'Pendant',article:'pd04210460',size:'',qty:1,repair:0,received:1,balance:0,metal:'White gold (585)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'19',itemKey:'1096-pd11231154-Amethyst Pear-00',itemType:'Pendant',article:'pd11231154',size:'',qty:2,repair:0,received:2,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'20',itemKey:'1096-ps03210460-Chromd Pear-00',itemType:'Studs',article:'ps03210460',size:'',qty:4,repair:0,received:0,balance:4,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'21',itemKey:'1096-ps06160700-Tanzanite Rnd-00',itemType:'Studs',article:'ps06160700',size:'',qty:4,repair:0,received:3,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'22',itemKey:'1096-ps09200401-Tanzanite Rnd-00',itemType:'Studs',article:'ps09200401',size:'',qty:3,repair:0,received:0,balance:3,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'23',itemKey:'1096-ps09251201-Lab Emerald Rnd-00',itemType:'Studs',article:'ps09251201',size:'',qty:2,repair:0,received:0,balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'24',itemKey:'1096-ps11102400-Citrine Rnd-00',itemType:'Studs',article:'ps11102400',size:'',qty:2,repair:0,received:0,balance:2,metal:'Silver (925)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'25',itemKey:'1096-ps11102400-Chromd Rnd-00',itemType:'Studs',article:'ps11102400',size:'',qty:8,repair:0,received:0,balance:8,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'26',itemKey:'1096-ps11102400-Topaz Rnd-00',itemType:'Studs',article:'ps11102400',size:'',qty:2,repair:0,received:1,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''},
+    {orderDate:'30/4/2026',orderNo:'1096',no:'27',itemKey:'1096-sg04202511-Chromd Pear-00',itemType:'Earrings',article:'sg04202511',size:'',qty:2,repair:0,received:2,balance:0,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:'28/5/2026'},
+    {orderDate:'14/5/2026',orderNo:'SP770780BП1',no:'01',itemKey:'SP770780BП1-pd04202512-Tanzanite Pear-00',itemType:'Pendant',article:'pd04202512',size:'',qty:1,repair:0,received:0,balance:1,metal:'White gold (585)',factory:'PKL',stoneComplete:'',finishDate:''},
+    {orderDate:'28/5/2026',orderNo:'JD00-000131',no:'01',itemKey:'JD00-000131-kc08241151-17.25-Topaz Ok-01',itemType:'Ring',article:'kc08241151',size:'17.25',qty:1,repair:0,received:0,balance:1,metal:'Silver (925)',factory:'PKL',stoneComplete:'OK',finishDate:''}
   ],
-  stoneOrders: [
-    {itemKey:'SM872884BЭ1-kl05220418-45-Topaz Princess-01',orderNo:'SM872884BЭ1',itemType:'Necklace',article:'kl05220418',stoneType:'Topaz Princess',stoneSize:'11.5x11.5',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:1,balance:'',complete:'TRUE',receivedDate:'28/5/2026'},
-    {itemKey:'SM872884BЭ1-kl05220418-45-Topaz Princess-01',orderNo:'SM872884BЭ1',itemType:'Necklace',article:'kl05220418',stoneType:'LGdiam Rnd',stoneSize:'1.1 - 1.2',totalQty:32,supplier:'Juluur',orderedDate:'26/5/2026',received:32,balance:'',complete:'TRUE',receivedDate:'28/5/2026'},
-    {itemKey:'JD00-000082-br04184700-17-Lab Ruby Rnd-01',orderNo:'JD00-000082',itemType:'Bracelet',article:'br04184700',stoneType:'Lab Ruby Rnd',stoneSize:'1.9 - 2.0',totalQty:432,supplier:'Vanyaa',orderedDate:'26/5/2026',received:420,balance:12,complete:'FALSE',receivedDate:''},
-    {itemKey:'JD00-000084-kc04210460-16-Lab Sapphire Pear-01',orderNo:'JD00-000084',itemType:'Ring',article:'kc04210460',stoneType:'Lab Sapphire Pear',stoneSize:'9x7',totalQty:2,supplier:'Ideal',orderedDate:'26/5/2026',received:'',balance:2,complete:'FALSE',receivedDate:''},
-    {itemKey:'JD00-000084-kc04210460-16.5-Lab Sapphire Pear-01',orderNo:'JD00-000084',itemType:'Ring',article:'kc04210460',stoneType:'Lab Sapphire Pear',stoneSize:'9x7',totalQty:3,supplier:'Ideal',orderedDate:'26/5/2026',received:'',balance:3,complete:'FALSE',receivedDate:''},
-    {itemKey:'JD00-000084-ps08210451-Tanzanite Rnd-00',orderNo:'JD00-000084',itemType:'Studs',article:'ps08210451',stoneType:'Tanzanite Rnd',stoneSize:'6.00',totalQty:10,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:10,complete:'FALSE',receivedDate:''},
+  stoneOrders:[
+    {itemKey:'JD00-000082-br04184700-17-Lab Ruby Rnd-01',orderNo:'JD00-000082',itemType:'Bracelet',article:'br04184700',stoneType:'Lab Ruby Rnd',stoneSize:'1.9-2.0',totalQty:432,supplier:'Vanyaa',orderedDate:'26/5/2026',received:420,balance:12,complete:'FALSE',receivedDate:''},
+    {itemKey:'JD00-000084-kc04210460-16-Lab Sapphire Pear-01',orderNo:'JD00-000084',itemType:'Ring',article:'kc04210460',stoneType:'Lab Sapphire Pear',stoneSize:'9x7',totalQty:2,supplier:'Ideal',orderedDate:'26/5/2026',received:0,balance:2,complete:'FALSE',receivedDate:''},
+    {itemKey:'JD00-000084-kc04210460-16.5-Lab Sapphire Pear-01',orderNo:'JD00-000084',itemType:'Ring',article:'kc04210460',stoneType:'Lab Sapphire Pear',stoneSize:'9x7',totalQty:3,supplier:'Ideal',orderedDate:'26/5/2026',received:0,balance:3,complete:'FALSE',receivedDate:''},
+    {itemKey:'JD00-000084-ps08210451-Tanzanite Rnd-00',orderNo:'JD00-000084',itemType:'Studs',article:'ps08210451',stoneType:'Tanzanite Rnd',stoneSize:'6.00',totalQty:10,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:10,complete:'FALSE',receivedDate:''},
     {itemKey:'JD00-000084-ps11210456-Lab Emerald Rnd-00',orderNo:'JD00-000084',itemType:'Studs',article:'ps11210456',stoneType:'Lab Emerald Rnd',stoneSize:'5.00',totalQty:10,supplier:'Vanyaa',orderedDate:'26/5/2026',received:7,balance:3,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-kc03220413-17-Citrine Ok-01',orderNo:'1096',itemType:'Ring',article:'kc03220413',stoneType:'Citrine Ok',stoneSize:'7x5',totalQty:1,supplier:'PinThai',orderedDate:'26/5/2026',received:'',balance:1,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-kc04220405-17-Chromd Ov-01',orderNo:'1096',itemType:'Ring',article:'kc04220405',stoneType:'Chromd Ov',stoneSize:'10x8',totalQty:2,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:2,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-kc04220405-17.5-Chromd Ov-01',orderNo:'1096',itemType:'Ring',article:'kc04220405',stoneType:'Chromd Ov',stoneSize:'10x8',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:1,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-kc04220422-17.5-Topaz Princess-01',orderNo:'1096',itemType:'Ring',article:'kc04220422',stoneType:'Topaz Princess',stoneSize:'10x10',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:1,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-kc09251201-16-Lab Emerald Rnd-01',orderNo:'1096',itemType:'Ring',article:'kc09251201',stoneType:'Lab Emerald Rnd',stoneSize:'6.00',totalQty:5,supplier:'Ideal',orderedDate:'26/5/2026',received:'',balance:5,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-kc11102400-16-Tanzanite Rnd-01',orderNo:'1096',itemType:'Ring',article:'kc11102400',stoneType:'Tanzanite Rnd',stoneSize:'6.0-6.2',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:1,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-kc11102400-17-Tanzanite Rnd-01',orderNo:'1096',itemType:'Ring',article:'kc11102400',stoneType:'Tanzanite Rnd',stoneSize:'6.0-6.2',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:1,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-kc03220413-17-Citrine Ok-01',orderNo:'1096',itemType:'Ring',article:'kc03220413',stoneType:'Citrine Ok',stoneSize:'7x5',totalQty:1,supplier:'PinThai',orderedDate:'26/5/2026',received:0,balance:1,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-kc04220405-17-Chromd Ov-01',orderNo:'1096',itemType:'Ring',article:'kc04220405',stoneType:'Chromd Ov',stoneSize:'10x8',totalQty:2,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:2,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-kc04220405-17.5-Chromd Ov-01',orderNo:'1096',itemType:'Ring',article:'kc04220405',stoneType:'Chromd Ov',stoneSize:'10x8',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:1,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-kc04220422-17.5-Topaz Princess-01',orderNo:'1096',itemType:'Ring',article:'kc04220422',stoneType:'Topaz Princess',stoneSize:'10x10',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:1,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-kc09251201-16-Lab Emerald Rnd-01',orderNo:'1096',itemType:'Ring',article:'kc09251201',stoneType:'Lab Emerald Rnd',stoneSize:'6.00',totalQty:5,supplier:'Ideal',orderedDate:'26/5/2026',received:0,balance:5,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-kc11102400-16-Tanzanite Rnd-01',orderNo:'1096',itemType:'Ring',article:'kc11102400',stoneType:'Tanzanite Rnd',stoneSize:'6.0-6.2',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:1,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-kc11102400-17-Tanzanite Rnd-01',orderNo:'1096',itemType:'Ring',article:'kc11102400',stoneType:'Tanzanite Rnd',stoneSize:'6.0-6.2',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:1,complete:'FALSE',receivedDate:''},
     {itemKey:'1096-ps03210460-Chromd Pear-00',orderNo:'1096',itemType:'Studs',article:'ps03210460',stoneType:'Chromd Pear',stoneSize:'4x3',totalQty:40,supplier:'PinThai',orderedDate:'26/5/2026',received:20,balance:20,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-ps06160700-Tanzanite Rnd-00',orderNo:'1096',itemType:'Studs',article:'ps06160700',stoneType:'Tanzanite Rnd',stoneSize:'1.6-1.8',totalQty:32,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:32,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-ps09200401-Tanzanite Rnd-00',orderNo:'1096',itemType:'Studs',article:'ps09200401',stoneType:'Tanzanite Rnd',stoneSize:'5.00',totalQty:6,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:6,complete:'FALSE',receivedDate:''},
-    {itemKey:'1096-ps11102400-Citrine Rnd-00',orderNo:'1096',itemType:'Studs',article:'ps11102400',stoneType:'Citrine Rnd',stoneSize:'4.3-4.7',totalQty:4,supplier:'PinThai',orderedDate:'26/5/2026',received:'',balance:4,complete:'FALSE',receivedDate:''},
-    {itemKey:'SP770780BП1-pd04202512-Tanzanite Pear-00',orderNo:'SP770780BП1',itemType:'Pendant',article:'pd04202512',stoneType:'Tanzanite Pear',stoneSize:'7x5',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:'',balance:1,complete:'FALSE',receivedDate:''}
+    {itemKey:'1096-ps06160700-Tanzanite Rnd-00',orderNo:'1096',itemType:'Studs',article:'ps06160700',stoneType:'Tanzanite Rnd',stoneSize:'1.6-1.8',totalQty:32,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:32,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-ps09200401-Tanzanite Rnd-00',orderNo:'1096',itemType:'Studs',article:'ps09200401',stoneType:'Tanzanite Rnd',stoneSize:'5.00',totalQty:6,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:6,complete:'FALSE',receivedDate:''},
+    {itemKey:'1096-ps11102400-Citrine Rnd-00',orderNo:'1096',itemType:'Studs',article:'ps11102400',stoneType:'Citrine Rnd',stoneSize:'4.3-4.7',totalQty:4,supplier:'PinThai',orderedDate:'26/5/2026',received:0,balance:4,complete:'FALSE',receivedDate:''},
+    {itemKey:'SP770780BП1-pd04202512-Tanzanite Pear-00',orderNo:'SP770780BП1',itemType:'Pendant',article:'pd04202512',stoneType:'Tanzanite Pear',stoneSize:'7x5',totalQty:1,supplier:'Vanyaa',orderedDate:'26/5/2026',received:0,balance:1,complete:'FALSE',receivedDate:''}
   ],
-  stonePurchase: [
+  stonePurchase:[
     {supplier:'Ideal',jobId:'1096-kc09251201-16-Lab Emerald Rnd-01',orderNo:'1096',itemType:'Ring',article:'kc09251201',stoneType:'Lab Emerald Rnd',stoneDia:'6.00',totalQty:5,balance:5,orderedDate:'26/5/2026',receivedDate:'',status:'PENDING RECEIVE'},
     {supplier:'Ideal',jobId:'JD00-000084-kc04210460-16.5-Lab Sapphire Pear-01',orderNo:'JD00-000084',itemType:'Ring',article:'kc04210460',stoneType:'Lab Sapphire Pear',stoneDia:'9x7',totalQty:3,balance:3,orderedDate:'26/5/2026',receivedDate:'',status:'PENDING RECEIVE'},
     {supplier:'Ideal',jobId:'JD00-000084-kc04210460-16-Lab Sapphire Pear-01',orderNo:'JD00-000084',itemType:'Ring',article:'kc04210460',stoneType:'Lab Sapphire Pear',stoneDia:'9x7',totalQty:2,balance:2,orderedDate:'26/5/2026',receivedDate:'',status:'PENDING RECEIVE'},
@@ -482,785 +354,357 @@ const RAW_DATA = {
     {supplier:'Vanyaa',jobId:'JD00-000084-ps11210456-Lab Emerald Rnd-00',orderNo:'JD00-000084',itemType:'Studs',article:'ps11210456',stoneType:'Lab Emerald Rnd',stoneDia:'5.00',totalQty:10,balance:3,orderedDate:'26/5/2026',receivedDate:'',status:'PARTIAL RECEIVE'},
     {supplier:'Vanyaa',jobId:'SP770780BП1-pd04202512-Tanzanite Pear-00',orderNo:'SP770780BП1',itemType:'Pendant',article:'pd04202512',stoneType:'Tanzanite Pear',stoneDia:'7x5',totalQty:1,balance:1,orderedDate:'26/5/2026',receivedDate:'',status:'PENDING RECEIVE'}
   ],
-  repairs: [],
-  pool: []
+  repairs:[],
+  pool:[]
 };
 
-let appData = JSON.parse(JSON.stringify(RAW_DATA));
+let D={};
+const SK='jeweltrack_v3';
+function loadData(){try{const s=localStorage.getItem(SK);if(s){const p=JSON.parse(s);D={...JSON.parse(JSON.stringify(SEED)),...p};}}catch(e){D=JSON.parse(JSON.stringify(SEED));} if(!D.orders)D=JSON.parse(JSON.stringify(SEED));}
+function save(){localStorage.setItem(SK,JSON.stringify(D));}
+function g(id){return document.getElementById(id);}
+function gv(id){return g(id).value;}
+function sh(id,h){g(id).innerHTML=h;}
+function toast(m){const e=g('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500);}
 
-async function loadStorage() {
-  try {
-    const r = await window.storage.get('jeweltrack-data');
-    if (r && r.value) {
-      const saved = JSON.parse(r.value);
-      appData.repairs = saved.repairs || [];
-      appData.pool = saved.pool || appData.pool;
-      if (saved.orders) appData.orders = saved.orders;
-      if (saved.jobs) appData.jobs = saved.jobs;
-      if (saved.stoneOrders) appData.stoneOrders = saved.stoneOrders;
-      if (saved.stonePurchase) appData.stonePurchase = saved.stonePurchase;
-    }
-  } catch(e) {}
-  renderAll();
-}
-
-async function saveStorage() {
-  try {
-    await window.storage.set('jeweltrack-data', JSON.stringify({
-      orders: appData.orders,
-      jobs: appData.jobs,
-      stoneOrders: appData.stoneOrders,
-      stonePurchase: appData.stonePurchase,
-      repairs: appData.repairs,
-      pool: appData.pool
-    }));
-  } catch(e) {}
-}
-
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  event.currentTarget.classList.add('active');
-}
-
-function zoneBadge(z) {
-  if (!z) return '';
-  const zc = z.includes('RED') ? 'red' : z.includes('YELLOW') ? 'yellow' : 'green';
-  return `<span class="badge badge-${zc}"><span class="zone-dot ${zc}"></span>${z}</span>`;
-}
-
-function statusBadge(s) {
-  if (!s) return '<span class="badge badge-gray">—</span>';
-  if (s==='PENDING RECEIVE') return `<span class="badge badge-yellow">${s}</span>`;
-  if (s==='PARTIAL RECEIVE') return `<span class="badge badge-blue">${s}</span>`;
-  if (s==='RECEIVED') return `<span class="badge badge-green">${s}</span>`;
-  return `<span class="badge badge-gray">${s}</span>`;
-}
-
-function renderAll() {
-  renderDashboard();
-  renderOrders();
-  renderJobs();
-  renderPool();
-  renderStoneOrders();
-  renderStonePurchase();
-  renderRepairs();
-  populateSupplierFilters();
-}
-
-function renderDashboard() {
-  const o = appData.orders;
-  const red = o.filter(x=>x.zone==='RED').length;
-  const yellow = o.filter(x=>x.zone==='YELLOW').length;
-  const green = o.filter(x=>x.zone==='GREEN').length;
-  const totalBalance = o.reduce((s,x)=>s+(x.balance||0),0);
-  const pendingStones = appData.stoneOrders.filter(x=>x.complete==='FALSE').length;
-
-  document.getElementById('dash-metrics').innerHTML = `
-    <div class="metric"><div class="metric-label">Total orders</div><div class="metric-val">${o.length}</div></div>
-    <div class="metric"><div class="metric-label">Red zone</div><div class="metric-val red">${red}</div></div>
-    <div class="metric"><div class="metric-label">Yellow zone</div><div class="metric-val yellow">${yellow}</div></div>
-    <div class="metric"><div class="metric-label">Green zone</div><div class="metric-val green">${green}</div></div>
-    <div class="metric"><div class="metric-label">Total balance</div><div class="metric-val">${totalBalance}</div></div>
-    <div class="metric"><div class="metric-label">Pending stones</div><div class="metric-val yellow">${pendingStones}</div></div>
-  `;
-
-  document.getElementById('dash-zones').innerHTML = [
-    `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span><span class="zone-dot red"></span> Red zone</span><strong>${red} orders</strong></div>`,
-    `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span><span class="zone-dot yellow"></span> Yellow zone</span><strong>${yellow} orders</strong></div>`,
-    `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span><span class="zone-dot green"></span> Green zone</span><strong>${green} orders</strong></div>`
-  ].join('');
-
-  const pending = appData.stonePurchase.filter(x=>x.status==='PENDING RECEIVE').length;
-  const partial = appData.stonePurchase.filter(x=>x.status==='PARTIAL RECEIVE').length;
-  const received = appData.stonePurchase.filter(x=>x.status==='RECEIVED').length;
-  document.getElementById('dash-stones').innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>Pending</span><strong style="color:#BA7517">${pending}</strong></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>Partial</span><strong style="color:#185FA5">${partial}</strong></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span>Received</span><strong style="color:#3B6D11">${received}</strong></div>
-  `;
-
-  document.getElementById('dash-orders').innerHTML = o.map(r => {
-    const pct = r.progress ? parseFloat(r.progress) : 0;
-    const zc = r.zone==='RED'?'red':r.zone==='YELLOW'?'yellow':'green';
-    return `<tr>
-      <td><strong>${r.orderNo}</strong></td>
-      <td>${r.dueDate}</td>
-      <td>${zoneBadge(r.zone)}</td>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar"><div class="progress-fill ${zc}" style="width:${pct}%"></div></div><span style="font-size:12px;color:var(--color-text-secondary)">${r.progress||'0%'}</span></div></td>
-      <td>${r.balance}</td>
-      <td>${r.daysElapsed||'—'}</td>
-    </tr>`;
-  }).join('');
-}
-
-function renderOrders() {
-  const search = document.getElementById('order-search').value.toLowerCase();
-  const zone = document.getElementById('order-zone-filter').value;
-  const filtered = appData.orders.filter(r => {
-    const m = (r.orderNo+r.factory+r.zone).toLowerCase().includes(search);
-    const z = !zone || r.zone.includes(zone);
-    return m && z;
+// NAV
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+    g('page-'+el.dataset.page).classList.add('active');
   });
-  document.getElementById('orders-body').innerHTML = filtered.map((r,i) => {
-    const pct = r.progress ? parseFloat(r.progress) : 0;
-    const zc = r.zone==='RED'?'red':r.zone==='YELLOW'?'yellow':'green';
-    return `<tr>
-      <td>${r.orderDate}</td>
-      <td><strong>${r.orderNo}</strong></td>
-      <td>${r.dueDate}</td>
-      <td>${zoneBadge(r.zone)}</td>
-      <td>${r.qty}</td>
-      <td>${r.finished||0}</td>
-      <td>${r.balance}</td>
-      <td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar"><div class="progress-fill ${zc}" style="width:${pct}%"></div></div><span style="font-size:11px">${r.progress||'—'}</span></div></td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-sm" onclick="viewOrderDetail(${i})"><i class="ti ti-eye" aria-hidden="true"></i></button>
-        <button class="btn btn-sm" onclick="editOrderProgress(${i})"><i class="ti ti-edit" aria-hidden="true"></i></button>
-      </td>
-    </tr>`;
-  }).join('');
+});
+
+// HELPERS
+function zbadge(z){if(!z)return'';const c=z.includes('RED')?'red':z.includes('YELLOW')?'yel':'grn';return`<span class="badge b${c[0]}"><span class="zdot ${c}"></span> ${z}</span>`;}
+function sbadge(s){if(!s)return'<span class="badge bgr">—</span>';if(s==='PENDING RECEIVE')return`<span class="badge by">${s}</span>`;if(s==='PARTIAL RECEIVE')return`<span class="badge bb">${s}</span>`;if(s==='RECEIVED')return`<span class="badge bg">${s}</span>`;return`<span class="badge bgr">${s}</span>`;}
+function supSel(val,idx,field){return`<select style="min-width:80px" onchange="inlineSet('${field}',${idx},this.value)">${SUPPLIERS.map(s=>`<option value="${s}"${s===val?' selected':''}>${s}</option>`).join('')}</select>`;}
+
+// INLINE SAVE
+function inlineSet(field,idx,val){
+  const map={so:D.stoneOrders,sp:D.stonePurchase,job:D.jobs,rep:D.repairs};
+  const parts=field.split('_');
+  const tbl=parts[0];const key=parts[1];
+  map[tbl][idx][key]=val;
+  // auto-calc balance for stoneOrders
+  if(tbl==='so'&&key==='received'){
+    const r=D.stoneOrders[idx];
+    r.balance=r.totalQty-(+val||0);
+    r.complete=r.balance<=0?'TRUE':'FALSE';
+  }
+  // repair status: if receivedDate set => done
+  if(tbl==='rep'&&key==='receivedDate'){
+    D.repairs[idx].repairStatus=val?'RECEIVED':'PENDING';
+  }
+  save();renderAll();
 }
 
-function renderJobs() {
-  const search = document.getElementById('job-search').value.toLowerCase();
-  const filtered = appData.jobs.filter(r => {
-    return (r.orderNo+r.article+r.itemType+r.itemKey).toLowerCase().includes(search);
-  });
-  document.getElementById('jobs-body').innerHTML = filtered.map((r,i) => {
-    const sc = r.stoneComplete==='OK' ? '<span class="badge badge-green"><i class="ti ti-check" aria-hidden="true"></i> OK</span>' : '<span class="badge badge-yellow">Pending</span>';
-    const fin = r.finishDate ? `<span class="badge badge-green">${r.finishDate}</span>` : '<span class="badge badge-gray">WIP</span>';
-    return `<tr>
-      <td style="color:var(--color-text-secondary)">${r.no}</td>
+// DASHBOARD
+function renderDashboard(){
+  const o=D.orders;
+  const red=o.filter(x=>x.zone==='RED').length;
+  const yel=o.filter(x=>x.zone==='YELLOW').length;
+  const grn=o.filter(x=>x.zone==='GREEN').length;
+  const bal=o.reduce((s,x)=>s+(x.balance||0),0);
+  const pend=D.stoneOrders.filter(x=>x.complete==='FALSE').length;
+  g('dash-updated').textContent='Last updated: '+new Date().toLocaleDateString('en-GB');
+  sh('dash-metrics',`<div class="metric"><div class="ml">Total orders</div><div class="mv">${o.length}</div></div><div class="metric"><div class="ml">Red zone</div><div class="mv red">${red}</div></div><div class="metric"><div class="ml">Yellow zone</div><div class="mv yel">${yel}</div></div><div class="metric"><div class="ml">Green zone</div><div class="mv grn">${grn}</div></div><div class="metric"><div class="ml">Total balance</div><div class="mv">${bal}</div></div><div class="metric"><div class="ml">Pending stones</div><div class="mv yel">${pend}</div></div>`);
+  sh('dash-zones',`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span><span class="zdot red" style="margin-right:5px"></span>Red</span><strong>${red}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span><span class="zdot yel" style="margin-right:5px"></span>Yellow</span><strong>${yel}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span><span class="zdot grn" style="margin-right:5px"></span>Green</span><strong>${grn}</strong></div>`);
+  const p=D.stonePurchase.filter(x=>x.status==='PENDING RECEIVE').length;
+  const pt=D.stonePurchase.filter(x=>x.status==='PARTIAL RECEIVE').length;
+  const rv=D.stonePurchase.filter(x=>x.status==='RECEIVED').length;
+  sh('dash-stones',`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span>Pending</span><strong style="color:var(--yel)">${p}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span>Partial</span><strong style="color:#185FA5">${pt}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span>Received</span><strong style="color:var(--grn)">${rv}</strong></div>`);
+  sh('dash-orders',o.map(r=>{const pct=r.progress?parseFloat(r.progress):0;const c=r.zone==='RED'?'red':r.zone==='YELLOW'?'yel':'grn';return`<tr><td><strong>${r.orderNo}</strong></td><td>${r.dueDate}</td><td>${zbadge(r.zone)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><div class="pf ${c}" style="width:${pct}%"></div></div><span style="font-size:11px">${r.progress||'—'}</span></div></td><td>${r.finished||0}</td><td>${r.balance}</td><td>${r.daysElapsed||'—'}</td></tr>`;}).join(''));
+}
+
+// ORDERS
+function renderOrders(){
+  const q=gv('order-search').toLowerCase();const z=gv('order-zone-f');
+  const f=D.orders.filter(r=>(r.orderNo+r.factory).toLowerCase().includes(q)&&(!z||r.zone.includes(z)));
+  sh('orders-body',f.map(r=>{const pct=r.progress?parseFloat(r.progress):0;const c=r.zone==='RED'?'red':r.zone==='YELLOW'?'yel':'grn';const i=D.orders.indexOf(r);return`<tr><td style="color:var(--tx2)">${r.orderDate}</td><td><strong>${r.orderNo}</strong></td><td>${r.dueDate}</td><td>${zbadge(r.zone)}</td><td>${r.qty}</td><td>${r.finished||0}</td><td>${r.balance}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><div class="pf ${c}" style="width:${pct}%"></div></div><span style="font-size:11px">${r.progress||'—'}</span></div></td><td style="white-space:nowrap"><button class="btn btns" onclick="viewOD(${i})"><i class="ti ti-eye"></i></button> <button class="btn btns" onclick="editOrder(${i})"><i class="ti ti-edit"></i></button></td></tr>`;}).join('')||'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
+}
+
+// JOBS — inline Repair + Received editable
+function renderJobs(){
+  const q=gv('job-search').toLowerCase();const tp=gv('job-type-f');const fin=gv('job-fin-f');
+  const f=D.jobs.filter(r=>(r.orderNo+r.article+r.itemType).toLowerCase().includes(q)&&(!tp||r.itemType===tp)&&(!fin||(fin==='finished'?!!r.finishDate:!r.finishDate)));
+  sh('jobs-body',f.map(r=>{
+    const i=D.jobs.indexOf(r);
+    const sc=r.stoneComplete==='OK'?'<span class="badge bg"><i class="ti ti-check"></i> OK</span>':'<span class="badge by">Pending</span>';
+    const fd=r.finishDate?`<span class="badge bg">${r.finishDate}</span>`:'<span class="badge bgr">WIP</span>';
+    return`<tr>
+      <td style="color:var(--tx3)">${r.no}</td>
       <td><strong>${r.orderNo}</strong></td>
       <td><span class="tag">${r.itemType}</span></td>
       <td>${r.article}</td>
       <td>${r.size||'—'}</td>
-      <td style="font-size:12px">${r.metal}</td>
+      <td style="font-size:12px;color:var(--tx2)">${r.metal}</td>
       <td>${r.qty}</td>
-      <td>${r.balance}</td>
+      <td><input type="number" value="${r.repair||0}" style="width:55px" onchange="inlineSet('job_repair',${i},+this.value);inlineCalcJob(${i})"></td>
+      <td><input type="number" value="${r.received||0}" style="width:55px" onchange="inlineSet('job_received',${i},+this.value);inlineCalcJob(${i})"></td>
+      <td id="jbal-${i}">${r.balance}</td>
       <td>${sc}</td>
-      <td>${fin}</td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-sm" onclick="editJobFinish(${i})"><i class="ti ti-edit" aria-hidden="true"></i></button>
-      </td>
+      <td>${fd}</td>
+      <td><button class="btn btns" onclick="editJob(${i})"><i class="ti ti-edit"></i></button></td>
     </tr>`;
-  }).join('');
+  }).join('')||'<tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
+}
+function inlineCalcJob(i){
+  const r=D.jobs[i];
+  r.balance=r.qty-(+r.received||0);
+  save();
+  const el=g('jbal-'+i);if(el)el.textContent=r.balance;
 }
 
-function renderPool() {
-  const search = document.getElementById('pool-search').value.toLowerCase();
-  const data = appData.pool.length ? appData.pool : [];
-  document.getElementById('pool-count').textContent = `${data.length} items`;
-  const filtered = data.filter(r => JSON.stringify(r).toLowerCase().includes(search));
-  if (!filtered.length) {
-    document.getElementById('pool-body').innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--color-text-tertiary);padding:2rem">No pool data — import from Excel above</td></tr>`;
-    return;
-  }
-  document.getElementById('pool-body').innerHTML = filtered.map(r => `<tr>
-    <td>${r.orderNo||''}</td>
-    <td><span class="tag">${r.type||''}</span></td>
-    <td>${r.article||''}</td>
-    <td style="font-size:12px">${r.metal||''}</td>
-    <td>${r.size||''}</td>
-    <td>${r.qty||''}</td>
-    <td>${r.stoneType||''}</td>
-    <td>${r.stoneDia||''}</td>
-    <td>${r.totalStones||''}</td>
-    <td style="font-size:11px;color:var(--color-text-secondary)">${(r.itemKey||'').substring(0,40)}${(r.itemKey||'').length>40?'...':''}</td>
-  </tr>`).join('');
+function populateJobTypeFilter(){
+  const types=[...new Set(D.jobs.map(j=>j.itemType))].sort();
+  g('job-type-f').innerHTML='<option value="">All types</option>'+types.map(t=>`<option value="${t}">${t}</option>`).join('');
 }
 
-function importPoolData() {
-  const raw = document.getElementById('pool-paste').value.trim();
-  if (!raw) { toast('Paste data first'); return; }
-  const lines = raw.split('\n').filter(l => l.trim());
-  const rows = [];
-  for (const line of lines) {
-    const cols = line.split('\t');
-    if (cols.length >= 8 && cols[0].trim()) {
+// ORDER POOL — full columns
+function renderPool(){
+  const q=gv('pool-search').toLowerCase();
+  const data=D.pool||[];
+  g('pool-count').textContent=data.length+' items';
+  const f=data.filter(r=>JSON.stringify(r).toLowerCase().includes(q));
+  if(!f.length){sh('pool-body','<tr><td colspan="15" style="text-align:center;padding:2rem;color:var(--tx3)">No pool data — import from Google Sheet above</td></tr>');return;}
+  sh('pool-body',f.map(r=>`<tr>
+    <td>${r.orderNo||''}</td><td><span class="tag">${r.type||''}</span></td>
+    <td>${r.article||''}</td><td style="font-size:12px">${r.metal||''}</td>
+    <td>${r.avgWt||''}</td><td>${r.totalWt||''}</td><td>${r.wtPurity||''}</td>
+    <td>${r.size||''}</td><td>${r.qty||''}</td>
+    <td>${r.stoneType||''}</td><td>${r.stoneSizing||''}</td><td>${r.stoneDia||''}</td>
+    <td>${r.stoneQtyPer||''}</td><td>${r.totalStones||''}</td>
+    <td style="font-size:11px;color:var(--tx3)" title="${r.itemKey||''}">${(r.itemKey||'').substring(0,30)}${(r.itemKey||'').length>30?'…':''}</td>
+  </tr>`).join(''));
+}
+
+function importPoolData(){
+  const raw=g('pool-paste').value.trim();
+  if(!raw){toast('Paste data first');return;}
+  const rows=[];
+  raw.split('\n').forEach(line=>{
+    const c=line.split('\t');
+    if(c.length>=8&&c[0].trim()&&!['ORDER POOL','Order No'].includes(c[0].trim())){
       rows.push({
-        orderNo: cols[0].trim(),
-        type: cols[1].trim(),
-        article: cols[3].trim(),
-        metal: cols[4].trim(),
-        size: cols[6].trim(),
-        qty: cols[7].trim(),
-        stoneType: cols[8] ? cols[8].trim() : '',
-        stoneSizing: cols[9] ? cols[9].trim() : '',
-        stoneDia: cols[10] ? cols[10].trim() : '',
-        stoneQtyPer: cols[11] ? cols[11].trim() : '',
-        totalStones: cols[12] ? cols[12].trim() : '',
-        itemKey: cols[13] ? cols[13].trim() : ''
+        orderNo:c[0].trim(),type:(c[1]||'').trim(),
+        article:(c[3]||'').trim(),metal:(c[4]||'').trim(),
+        avgWt:(c[5]||'').trim(),totalWt:(c[6]||'').trim(),wtPurity:(c[7]||'').trim(),
+        size:(c[8]||'').trim(),qty:(c[9]||'').trim(),
+        stoneType:(c[10]||'').trim(),stoneSizing:(c[11]||'').trim(),
+        stoneDia:(c[12]||'').trim(),stoneQtyPer:(c[13]||'').trim(),
+        totalStones:(c[14]||'').trim(),itemKey:(c[15]||'').trim()
       });
     }
-  }
-  if (!rows.length) { toast('Could not parse data — check format'); return; }
-  appData.pool = rows;
-  saveStorage();
-  renderPool();
-  toast(`Imported ${rows.length} rows`);
-  document.getElementById('pool-paste').value = '';
+  });
+  if(!rows.length){toast('Could not parse — check column alignment');return;}
+  D.pool=rows;save();renderPool();toast('Imported '+rows.length+' rows');
+  g('pool-paste').value='';
 }
 
-function renderStoneOrders() {
-  const search = document.getElementById('so-search').value.toLowerCase();
-  const complete = document.getElementById('so-complete-filter').value;
-  const supplier = document.getElementById('so-supplier-filter').value;
-  const filtered = appData.stoneOrders.filter(r => {
-    const m = (r.orderNo+r.stoneType+r.supplier+r.itemKey).toLowerCase().includes(search);
-    const c = !complete || r.complete===complete.toUpperCase();
-    const s = !supplier || r.supplier===supplier;
-    return m && c && s;
-  });
-  document.getElementById('so-body').innerHTML = filtered.map((r,i) => {
-    const comp = r.complete==='TRUE' ? '<span class="badge badge-green">Complete</span>' : '<span class="badge badge-yellow">Pending</span>';
-    return `<tr>
+// STONE ORDERS — inline Supplier, Ordered Date, Received editable
+function renderStoneOrders(){
+  const q=gv('so-search').toLowerCase();const c=gv('so-complete-f');const s=gv('so-supplier-f');
+  const f=D.stoneOrders.filter(r=>(r.orderNo+r.stoneType+r.supplier).toLowerCase().includes(q)&&(!c||r.complete===c)&&(!s||r.supplier===s));
+  sh('so-body',f.map(r=>{
+    const i=D.stoneOrders.indexOf(r);
+    const comp=r.complete==='TRUE'?'<span class="badge bg">Complete</span>':'<span class="badge by">Pending</span>';
+    return`<tr>
       <td><strong>${r.orderNo}</strong></td>
       <td><span class="tag">${r.itemType}</span></td>
       <td>${r.stoneType}</td>
       <td>${r.stoneSize}</td>
       <td>${r.totalQty}</td>
-      <td>${r.supplier}</td>
-      <td>${r.received||'—'}</td>
-      <td>${r.balance||'—'}</td>
+      <td>${supSel(r.supplier,i,'so_supplier')}</td>
+      <td><input type="text" value="${r.orderedDate||''}" placeholder="26/5/2026" onchange="inlineSet('so_orderedDate',${i},this.value)"></td>
+      <td><input type="number" value="${r.received||0}" style="width:65px" onchange="inlineSet('so_received',${i},+this.value)"></td>
+      <td id="sobal-${i}">${r.balance||0}</td>
       <td>${comp}</td>
-      <td><button class="btn btn-sm" onclick="markStoneReceived(${i})"><i class="ti ti-check" aria-hidden="true"></i></button></td>
+      <td><input type="text" value="${r.receivedDate||''}" placeholder="28/5/2026" onchange="inlineSet('so_receivedDate',${i},this.value)"></td>
+      <td><button class="btn btns" onclick="viewSODetail(${i})"><i class="ti ti-eye"></i></button></td>
     </tr>`;
-  }).join('');
+  }).join('')||'<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
 }
 
-function renderStonePurchase() {
-  const search = document.getElementById('sp-search').value.toLowerCase();
-  const status = document.getElementById('sp-status-filter').value;
-  const supplier = document.getElementById('sp-supplier-filter').value;
-  const filtered = appData.stonePurchase.filter(r => {
-    const m = (r.supplier+r.orderNo+r.stoneType+r.jobId).toLowerCase().includes(search);
-    const st = !status || r.status===status;
-    const s = !supplier || r.supplier===supplier;
-    return m && st && s;
-  });
-  document.getElementById('sp-body').innerHTML = filtered.map((r,i) => `<tr>
-    <td><span class="badge badge-purple">${r.supplier}</span></td>
-    <td>${r.orderNo}</td>
-    <td><span class="tag">${r.itemType}</span></td>
-    <td>${r.stoneType}</td>
-    <td>${r.stoneDia}</td>
-    <td>${r.totalQty}</td>
-    <td>${r.balance}</td>
-    <td>${r.orderedDate}</td>
-    <td>${statusBadge(r.status)}</td>
-    <td><button class="btn btn-sm" onclick="updatePurchaseStatus(${i})"><i class="ti ti-refresh" aria-hidden="true"></i></button></td>
-  </tr>`).join('');
+// STONE PURCHASE — grouped by supplier, each in a card
+function renderStonePurchase(){
+  const qs=gv('sp-search').toLowerCase();const st=gv('sp-status-f');const selSup=gv('sp-supplier-f');
+  const all=D.stonePurchase.filter(r=>(r.supplier+r.orderNo+r.stoneType).toLowerCase().includes(qs)&&(!st||r.status===st)&&(!selSup||r.supplier===selSup));
+  const sups=[...new Set(all.map(r=>r.supplier))].sort();
+  if(!sups.length){sh('sp-content','<div style="text-align:center;padding:2rem;color:var(--tx3)">No results</div>');return;}
+  sh('sp-content',sups.map(sup=>{
+    const rows=all.filter(r=>r.supplier===sup);
+    const pending=rows.filter(r=>r.status!=='RECEIVED').length;
+    return`<div class="sp-view">
+      <div class="sp-header"><span><i class="ti ti-diamond" style="margin-right:6px"></i>${sup} <span style="font-size:12px;font-weight:400;margin-left:8px">${pending} pending / ${rows.length} total</span></span></div>
+      <table>
+        <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Dia</th><th>Total</th><th>Balance</th><th>Ordered</th><th>Rcvd date</th><th>Status</th></tr></thead>
+        <tbody>${rows.map(r=>{const i=D.stonePurchase.indexOf(r);return`<tr>
+          <td>${r.orderNo}</td>
+          <td><span class="tag">${r.itemType}</span></td>
+          <td>${r.stoneType}</td>
+          <td>${r.stoneDia}</td>
+          <td>${r.totalQty}</td>
+          <td><input type="number" value="${r.balance}" style="width:65px" onchange="inlineSet('sp_balance',${i},+this.value)"></td>
+          <td>${r.orderedDate}</td>
+          <td><input type="text" value="${r.receivedDate||''}" placeholder="28/5/2026" onchange="inlineSPDate(${i},this.value)"></td>
+          <td>${sbadge(r.status)}</td>
+        </tr>`;}).join('')}</tbody>
+      </table>
+    </div>`;
+  }).join(''));
 }
-
-function renderRepairs() {
-  const r = appData.repairs;
-  if (!r.length) {
-    document.getElementById('repair-body').innerHTML = `<tr><td colspan="11" style="text-align:center;color:var(--color-text-tertiary);padding:2rem">No repair jobs logged</td></tr>`;
-    return;
+function inlineSPDate(i,val){
+  D.stonePurchase[i].receivedDate=val;
+  if(val){
+    const r=D.stonePurchase[i];
+    r.status=r.balance<=0?'RECEIVED':'PARTIAL RECEIVE';
   }
-  document.getElementById('repair-body').innerHTML = r.map((x,i) => `<tr>
-    <td>${x.sentDate}</td>
-    <td>${x.refJob}</td>
-    <td>${x.orderNo}</td>
-    <td>${x.type}</td>
-    <td>${x.article}</td>
-    <td>${x.size||'—'}</td>
-    <td>${x.qty}</td>
-    <td>${x.factory}</td>
-    <td><span class="badge badge-red">${x.reason}</span></td>
-    <td>${statusBadge(x.status)}</td>
-    <td><button class="btn btn-sm" onclick="updateRepairStatus(${i})"><i class="ti ti-refresh" aria-hidden="true"></i></button></td>
-  </tr>`).join('');
+  save();renderStonePurchase();
 }
 
-function populateSupplierFilters() {
-  const soSuppliers = [...new Set(appData.stoneOrders.map(x=>x.supplier))];
-  const soSel = document.getElementById('so-supplier-filter');
-  soSel.innerHTML = `<option value="">All suppliers</option>` + soSuppliers.map(s=>`<option value="${s}">${s}</option>`).join('');
-
-  const spSuppliers = [...new Set(appData.stonePurchase.map(x=>x.supplier))];
-  const spSel = document.getElementById('sp-supplier-filter');
-  spSel.innerHTML = `<option value="">All suppliers</option>` + spSuppliers.map(s=>`<option value="${s}">${s}</option>`).join('');
+// REPAIR — inline Ref.Job, Reason dropdown, Received Date
+function renderRepairs(){
+  if(!D.repairs.length){sh('repair-body','<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--tx3)">No repair jobs — click Log repair to add</td></tr>');return;}
+  sh('repair-body',D.repairs.map((r,i)=>{
+    const reasons=['CROOK','POROSITY','DEFORM','POLISH'];
+    const reasonSel=`<select onchange="inlineSet('rep_repairReason',${i},this.value)">${reasons.map(rs=>`<option value="${rs}"${rs===r.repairReason?' selected':''}>${rs}</option>`).join('')}</select>`;
+    const done=!!r.receivedDate;
+    const st=done?'<span class="badge bg">Done</span>':'<span class="badge by">Pending</span>';
+    return`<tr style="${done?'opacity:.7':''}">
+      <td>${r.sentDate}</td>
+      <td><input type="text" value="${r.refJob||''}" placeholder="Ref..." onchange="inlineSet('rep_refJob',${i},this.value)"></td>
+      <td style="font-size:11px;color:var(--tx3)" title="${r.itemKey||''}">${(r.itemKey||r.article||'').substring(0,20)}…</td>
+      <td>${r.orderNo}</td>
+      <td><span class="tag">${r.type}</span></td>
+      <td>${r.article}</td>
+      <td>${r.size||'—'}</td>
+      <td>${r.qty}</td>
+      <td>${r.factory}</td>
+      <td>${st}</td>
+      <td>${reasonSel}</td>
+      <td><input type="text" value="${r.receivedDate||''}" placeholder="28/5/2026" onchange="inlineSet('rep_receivedDate',${i},this.value)"></td>
+    </tr>`;
+  }).join(''));
 }
 
-function viewOrderDetail(idx) {
-  const r = appData.orders[idx];
-  const jobs = appData.jobs.filter(j=>j.orderNo===r.orderNo);
-  const stones = appData.stoneOrders.filter(s=>s.orderNo===r.orderNo);
-  const pendingS = stones.filter(s=>s.complete==='FALSE').length;
+function populateSpSupplierFilter(){
+  const sups=[...new Set(D.stonePurchase.map(x=>x.supplier))].sort();
+  g('sp-supplier-f').innerHTML='<option value="">All suppliers</option>'+sups.map(s=>`<option value="${s}">${s}</option>`).join('');
+  const soSups=[...new Set(D.stoneOrders.map(x=>x.supplier))].sort();
+  g('so-supplier-f').innerHTML='<option value="">All suppliers</option>'+soSups.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
 
-  document.getElementById('detail-content').innerHTML = `
-    <h2 style="font-size:18px;font-weight:500;margin-bottom:1rem">${r.orderNo}</h2>
-    <dl class="dl">
-      <dt>Order date</dt><dd>${r.orderDate}</dd>
-      <dt>Due date</dt><dd>${r.dueDate}</dd>
-      <dt>Factory</dt><dd>${r.factory}</dd>
-      <dt>Zone</dt><dd>${zoneBadge(r.zone)}</dd>
-      <dt>Total qty</dt><dd>${r.qty}</dd>
-      <dt>Finished</dt><dd>${r.finished||0}</dd>
-      <dt>Balance</dt><dd>${r.balance}</dd>
-      <dt>Progress</dt><dd>${r.progress||'—'}</dd>
-      <dt>Days elapsed</dt><dd>${r.daysElapsed||'—'}</dd>
-    </dl>
+// DETAIL PANEL
+function viewOD(idx){
+  const r=D.orders[idx];
+  const jobs=D.jobs.filter(j=>j.orderNo===r.orderNo);
+  const stones=D.stoneOrders.filter(s=>s.orderNo===r.orderNo);
+  sh('dp-content',`<h2 style="font-size:18px;font-weight:500;margin-bottom:1rem">${r.orderNo}</h2>
+    <dl class="dl"><dt>Order date</dt><dd>${r.orderDate}</dd><dt>Due date</dt><dd>${r.dueDate}</dd><dt>Factory</dt><dd>${r.factory}</dd><dt>Zone</dt><dd>${zbadge(r.zone)}</dd><dt>Qty</dt><dd>${r.qty}</dd><dt>Finished</dt><dd>${r.finished||0}</dd><dt>Balance</dt><dd>${r.balance}</dd><dt>Progress</dt><dd>${r.progress||'—'}</dd></dl>
     <hr class="divider">
-    <h3 style="font-size:14px;font-weight:500;margin-bottom:0.75rem">Job items (${jobs.length})</h3>
-    ${jobs.map(j=>`<div class="stone-row"><div class="stone-name">${j.itemType} — ${j.article} ${j.size?'sz '+j.size:''}</div><div class="stone-meta">Qty: ${j.qty} | Balance: ${j.balance} | Stone: ${j.stoneComplete==='OK'?'✓ OK':'pending'} ${j.finishDate?'| Finished: '+j.finishDate:''}</div></div>`).join('')}
+    <p style="font-size:13px;font-weight:500;margin-bottom:.75rem">Job items (${jobs.length})</p>
+    ${jobs.map(j=>`<div class="srow"><div class="sn">${j.itemType} — ${j.article}${j.size?' sz '+j.size:''}</div><div class="sm">Qty: ${j.qty} | Rcvd: ${j.received||0} | Balance: ${j.balance} | Stone: ${j.stoneComplete==='OK'?'✓ OK':'pending'}${j.finishDate?' | Done: '+j.finishDate:''}</div></div>`).join('')||'<p style="font-size:13px;color:var(--tx3)">None</p>'}
     <hr class="divider">
-    <h3 style="font-size:14px;font-weight:500;margin-bottom:0.75rem">Stones — ${pendingS} pending</h3>
-    ${stones.map(s=>`<div class="stone-row"><div class="stone-name">${s.stoneType} (${s.stoneSize})</div><div class="stone-meta">Supplier: ${s.supplier} | Total: ${s.totalQty} | Received: ${s.received||0} | Balance: ${s.balance||0} | ${s.complete==='TRUE'?'<span style="color:#3B6D11">Complete</span>':'<span style="color:#BA7517">Pending</span>'}</div></div>`).join('')}
-  `;
+    <p style="font-size:13px;font-weight:500;margin-bottom:.75rem">Stones (${stones.filter(s=>s.complete==='FALSE').length} pending)</p>
+    ${stones.map(s=>`<div class="srow"><div class="sn">${s.stoneType} ${s.stoneSize}</div><div class="sm">Supplier: ${s.supplier} | Total: ${s.totalQty} | Rcvd: ${s.received||0} | Balance: ${s.balance||0} | <span style="color:${s.complete==='TRUE'?'var(--grn)':'var(--yel)'}">${s.complete==='TRUE'?'Complete':'Pending'}</span></div></div>`).join('')||'<p style="font-size:13px;color:var(--tx3)">None</p>'}`);
   openDetail();
 }
-
-function editOrderProgress(idx) {
-  const r = appData.orders[idx];
-  openModal(`
-    <h3>Edit order ${r.orderNo}</h3>
-    <div class="form-group">
-      <label class="form-label">Progress %</label>
-      <input type="text" id="edit-progress" value="${r.progress||''}" placeholder="e.g. 50.00%">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Finished items</label>
-        <input type="number" id="edit-finished" value="${r.finished||0}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Balance</label>
-        <input type="number" id="edit-balance" value="${r.balance||0}">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Finish date</label>
-      <input type="text" id="edit-findate" value="${r.finishDate||''}" placeholder="e.g. 28/5/2026">
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveOrderEdit(${idx})">Save changes</button>
-    </div>
-  `);
+function viewSODetail(idx){
+  const r=D.stoneOrders[idx];
+  sh('dp-content',`<h2 style="font-size:18px;font-weight:500;margin-bottom:1rem">${r.stoneType}</h2>
+    <dl class="dl"><dt>Order no</dt><dd>${r.orderNo}</dd><dt>Type</dt><dd>${r.itemType}</dd><dt>Article</dt><dd>${r.article}</dd><dt>Stone size</dt><dd>${r.stoneSize}</dd><dt>Total qty</dt><dd>${r.totalQty}</dd><dt>Supplier</dt><dd>${r.supplier}</dd><dt>Ordered</dt><dd>${r.orderedDate||'—'}</dd><dt>Received</dt><dd>${r.received||0}</dd><dt>Balance</dt><dd>${r.balance||0}</dd><dt>Status</dt><dd>${r.complete==='TRUE'?'✓ Complete':'Pending'}</dd><dt>Rcvd date</dt><dd>${r.receivedDate||'—'}</dd></dl>`);
+  openDetail();
 }
+function openDetail(){g('ov').classList.add('open');g('dp').classList.add('open');}
+function closeDetail(){g('ov').classList.remove('open');g('dp').classList.remove('open');}
 
-function saveOrderEdit(idx) {
-  appData.orders[idx].progress = document.getElementById('edit-progress').value;
-  appData.orders[idx].finished = parseInt(document.getElementById('edit-finished').value)||0;
-  appData.orders[idx].balance = parseInt(document.getElementById('edit-balance').value)||0;
-  appData.orders[idx].finishDate = document.getElementById('edit-findate').value;
-  saveStorage();
-  closeModal();
-  renderAll();
-  toast('Order updated');
+// MODAL
+function openModal(html){sh('modal-content',html);g('mbg').classList.add('open');}
+function closeModal(){g('mbg').classList.remove('open');}
+
+// EDIT MODALS
+function editOrder(idx){
+  const r=D.orders[idx];
+  openModal(`<h3>Edit order ${r.orderNo}</h3>
+    <div class="fr"><div class="fg"><label class="fl">Progress %</label><input id="ep" value="${r.progress||''}"></div><div class="fg"><label class="fl">Finished items</label><input type="number" id="ef" value="${r.finished||0}"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Balance</label><input type="number" id="eb" value="${r.balance||0}"></div><div class="fg"><label class="fl">Finish date</label><input id="efd" value="${r.finishDate||''}" placeholder="28/5/2026"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Zone</label><select id="ez"><option value="RED"${r.zone==='RED'?' selected':''}>Red</option><option value="YELLOW"${r.zone==='YELLOW'?' selected':''}>Yellow</option><option value="GREEN"${r.zone==='GREEN'?' selected':''}>Green</option></select></div><div class="fg"><label class="fl">Days elapsed</label><input type="number" id="ede" value="${r.daysElapsed||0}"></div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveOrder(${idx})">Save</button></div>`);
 }
+function saveOrder(idx){D.orders[idx].progress=gv('ep');D.orders[idx].finished=+gv('ef')||0;D.orders[idx].balance=+gv('eb')||0;D.orders[idx].finishDate=gv('efd');D.orders[idx].zone=gv('ez');D.orders[idx].daysElapsed=+gv('ede')||0;save();closeModal();renderAll();toast('Order updated');}
 
-function editJobFinish(idx) {
-  const r = appData.jobs[idx];
-  openModal(`
-    <h3>Update job item</h3>
-    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem">${r.itemKey}</p>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Stone complete</label>
-        <select id="edit-stone">
-          <option value="">Pending</option>
-          <option value="OK" ${r.stoneComplete==='OK'?'selected':''}>OK</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Finish date</label>
-        <input type="text" id="edit-jfindate" value="${r.finishDate||''}" placeholder="28/5/2026">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Received qty</label>
-        <input type="number" id="edit-received" value="${r.received||0}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Balance</label>
-        <input type="number" id="edit-jbalance" value="${r.balance||0}">
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveJobEdit(${idx})">Save</button>
-    </div>
-  `);
+function editJob(idx){
+  const r=D.jobs[idx];
+  openModal(`<h3>Update job item</h3>
+    <p style="font-size:12px;color:var(--tx2);margin-bottom:1rem">${r.itemKey}</p>
+    <div class="fr"><div class="fg"><label class="fl">Stone complete</label><select id="js"><option value="">Pending</option><option value="OK"${r.stoneComplete==='OK'?' selected':''}>OK</option></select></div><div class="fg"><label class="fl">Finish date</label><input id="jf" value="${r.finishDate||''}" placeholder="28/5/2026"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Repair qty</label><input type="number" id="jr2" value="${r.repair||0}"></div><div class="fg"><label class="fl">Received qty</label><input type="number" id="jrc" value="${r.received||0}"></div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveJob(${idx})">Save</button></div>`);
 }
+function saveJob(idx){D.jobs[idx].stoneComplete=gv('js');D.jobs[idx].finishDate=gv('jf');D.jobs[idx].repair=+gv('jr2')||0;D.jobs[idx].received=+gv('jrc')||0;D.jobs[idx].balance=D.jobs[idx].qty-(+gv('jrc')||0);save();closeModal();renderAll();toast('Job updated');}
 
-function saveJobEdit(idx) {
-  appData.jobs[idx].stoneComplete = document.getElementById('edit-stone').value;
-  appData.jobs[idx].finishDate = document.getElementById('edit-jfindate').value;
-  appData.jobs[idx].received = parseInt(document.getElementById('edit-received').value)||0;
-  appData.jobs[idx].balance = parseInt(document.getElementById('edit-jbalance').value)||0;
-  saveStorage();
-  closeModal();
-  renderAll();
-  toast('Job item updated');
+function openAddOrder(){
+  openModal(`<h3>Add new order</h3>
+    <div class="fr"><div class="fg"><label class="fl">Order no</label><input id="no1" placeholder="JD00-000132"></div><div class="fg"><label class="fl">Order date</label><input id="no2" placeholder="28/5/2026"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Due date</label><input id="no3" placeholder="27/7/2026"></div><div class="fg"><label class="fl">Total qty</label><input type="number" id="no4" value="1"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Factory</label><input id="no5" value="PKL"></div><div class="fg"><label class="fl">Zone</label><select id="no6"><option value="GREEN">Green</option><option value="YELLOW">Yellow</option><option value="RED">Red</option></select></div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveNewOrder()">Add</button></div>`);
 }
+function saveNewOrder(){const qty=+gv('no4')||1;D.orders.push({orderDate:gv('no2'),orderNo:gv('no1'),progress:'',dueDate:gv('no3'),qty,daysElapsed:0,zone:gv('no6'),finished:0,balance:qty,factory:gv('no5'),finishDate:''});save();closeModal();renderAll();toast('Order added');}
 
-function markStoneReceived(idx) {
-  openModal(`
-    <h3>Update stone receipt</h3>
-    <div class="form-group">
-      <label class="form-label">Received qty</label>
-      <input type="number" id="so-received" value="${appData.stoneOrders[idx].received||0}">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Received date</label>
-      <input type="text" id="so-recdate" value="${appData.stoneOrders[idx].receivedDate||''}" placeholder="28/5/2026">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Status</label>
-      <select id="so-comp">
-        <option value="FALSE" ${appData.stoneOrders[idx].complete==='FALSE'?'selected':''}>Pending</option>
-        <option value="TRUE" ${appData.stoneOrders[idx].complete==='TRUE'?'selected':''}>Complete</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveStoneOrder(${idx})">Save</button>
-    </div>
-  `);
+function openAddRepair(){
+  openModal(`<h3>Log repair job</h3>
+    <div class="fr"><div class="fg"><label class="fl">Sent date</label><input id="rp1" placeholder="28/5/2026"></div><div class="fg"><label class="fl">Order no</label><input id="rp2"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Item type</label><input id="rp3" placeholder="Ring..."></div><div class="fg"><label class="fl">Article</label><input id="rp4"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Item key</label><input id="rpk" placeholder="Item key..."></div><div class="fg"><label class="fl">Size</label><input id="rp5"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Qty</label><input type="number" id="rp6" value="1"></div><div class="fg"><label class="fl">Factory</label><input id="rp7" value="PKL"></div></div>
+    <div class="fg"><label class="fl">Repair reason</label><select id="rp8"><option>CROOK</option><option>POROSITY</option><option>DEFORM</option><option>POLISH</option></select></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveRepair()">Log</button></div>`);
 }
+function saveRepair(){D.repairs.push({sentDate:gv('rp1'),refJob:'',itemKey:gv('rpk'),orderNo:gv('rp2'),type:gv('rp3'),article:gv('rp4'),size:gv('rp5'),qty:+gv('rp6')||1,factory:gv('rp7'),repairStatus:'PENDING',repairReason:gv('rp8'),receivedDate:''});save();closeModal();renderRepairs();toast('Repair logged');}
 
-function saveStoneOrder(idx) {
-  const rec = parseInt(document.getElementById('so-received').value)||0;
-  appData.stoneOrders[idx].received = rec;
-  appData.stoneOrders[idx].receivedDate = document.getElementById('so-recdate').value;
-  appData.stoneOrders[idx].complete = document.getElementById('so-comp').value;
-  appData.stoneOrders[idx].balance = appData.stoneOrders[idx].totalQty - rec;
-  saveStorage();
-  closeModal();
-  renderAll();
-  toast('Stone order updated');
+// AI
+let aiH=[];
+async function sendQuick(msg){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelector('[data-page="ai"]').classList.add('active');
+  g('page-ai').classList.add('active');
+  await doAI(msg);
 }
-
-function updatePurchaseStatus(idx) {
-  const r = appData.stonePurchase[idx];
-  openModal(`
-    <h3>Update purchase status</h3>
-    <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem">${r.supplier} — ${r.stoneType}</p>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Balance remaining</label>
-        <input type="number" id="sp-bal" value="${r.balance}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Received date</label>
-        <input type="text" id="sp-date" value="${r.receivedDate||''}" placeholder="28/5/2026">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Status</label>
-      <select id="sp-status">
-        <option value="PENDING RECEIVE" ${r.status==='PENDING RECEIVE'?'selected':''}>Pending receive</option>
-        <option value="PARTIAL RECEIVE" ${r.status==='PARTIAL RECEIVE'?'selected':''}>Partial receive</option>
-        <option value="RECEIVED" ${r.status==='RECEIVED'?'selected':''}>Received</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="savePurchaseStatus(${idx})">Save</button>
-    </div>
-  `);
+async function submitAI(){const msg=g('ai-input').value.trim();if(!msg)return;g('ai-input').value='';await doAI(msg);}
+async function doAI(msg){
+  addMsg(msg,'mu');
+  const loader=addLoader();
+  aiH.push({role:'user',content:msg});
+  const sys=`You are a production assistant for a jewellery manufacturer. Answer in the same language as the user (Thai or English).
+ORDERS: ${JSON.stringify(D.orders)}
+STONE ORDERS (pending): ${JSON.stringify(D.stoneOrders.filter(s=>s.complete==='FALSE'))}
+STONE PURCHASE: ${JSON.stringify(D.stonePurchase)}
+JOBS (first 15): ${JSON.stringify(D.jobs.slice(0,15))}
+REPAIRS: ${JSON.stringify(D.repairs)}
+Answer concisely with specific numbers and dates.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:aiH})});
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||'No response.';
+    aiH.push({role:'assistant',content:reply});
+    loader.remove();addMsg(reply,'ma');
+  }catch(e){loader.remove();addMsg('Connection error.','ma');}
 }
+function addMsg(text,cls){const c=g('ai-msgs');const el=document.createElement('div');el.className='msg '+cls;el.textContent=text;c.appendChild(el);c.scrollTop=c.scrollHeight;}
+function addLoader(){const c=g('ai-msgs');const el=document.createElement('div');el.className='msg ma mld';el.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';c.appendChild(el);c.scrollTop=c.scrollHeight;return el;}
 
-function savePurchaseStatus(idx) {
-  appData.stonePurchase[idx].balance = parseInt(document.getElementById('sp-bal').value)||0;
-  appData.stonePurchase[idx].receivedDate = document.getElementById('sp-date').value;
-  appData.stonePurchase[idx].status = document.getElementById('sp-status').value;
-  saveStorage();
-  closeModal();
-  renderAll();
-  toast('Purchase status updated');
-}
+// RENDER ALL
+function renderAll(){renderDashboard();renderOrders();renderJobs();renderPool();renderStoneOrders();renderStonePurchase();renderRepairs();}
 
-function openAddRepair() {
-  openModal(`
-    <h3>Log repair job</h3>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Sent date</label>
-        <input type="text" id="rep-date" placeholder="28/5/2026">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Order no</label>
-        <input type="text" id="rep-order">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Item type</label>
-        <input type="text" id="rep-type" placeholder="Ring, Necklace...">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Article</label>
-        <input type="text" id="rep-article">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Size</label>
-        <input type="text" id="rep-size">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Qty</label>
-        <input type="number" id="rep-qty" value="1">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Factory</label>
-        <input type="text" id="rep-factory" value="PKL">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Repair reason</label>
-        <select id="rep-reason">
-          <option>CROOK</option>
-          <option>POROSITY</option>
-          <option>DEFORM</option>
-          <option>POLISH</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveRepair()">Log repair</button>
-    </div>
-  `);
-}
-
-function saveRepair() {
-  const r = {
-    sentDate: document.getElementById('rep-date').value,
-    refJob: '',
-    orderNo: document.getElementById('rep-order').value,
-    type: document.getElementById('rep-type').value,
-    article: document.getElementById('rep-article').value,
-    size: document.getElementById('rep-size').value,
-    qty: parseInt(document.getElementById('rep-qty').value)||1,
-    factory: document.getElementById('rep-factory').value,
-    reason: document.getElementById('rep-reason').value,
-    status: 'PENDING RECEIVE'
-  };
-  appData.repairs.push(r);
-  saveStorage();
-  closeModal();
-  renderRepairs();
-  toast('Repair logged');
-}
-
-function updateRepairStatus(idx) {
-  openModal(`
-    <h3>Update repair status</h3>
-    <div class="form-group">
-      <label class="form-label">Status</label>
-      <select id="rep-status">
-        <option value="PENDING RECEIVE">Pending receive</option>
-        <option value="IN PROGRESS">In progress</option>
-        <option value="RECEIVED">Received</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Received date</label>
-      <input type="text" id="rep-recdate" placeholder="28/5/2026">
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveRepairStatus(${idx})">Save</button>
-    </div>
-  `);
-}
-
-function saveRepairStatus(idx) {
-  appData.repairs[idx].status = document.getElementById('rep-status').value;
-  appData.repairs[idx].receivedDate = document.getElementById('rep-recdate').value;
-  saveStorage();
-  closeModal();
-  renderRepairs();
-  toast('Repair status updated');
-}
-
-function openAddOrder() {
-  openModal(`
-    <h3>Add new order</h3>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Order no</label>
-        <input type="text" id="no-orderNo">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Order date</label>
-        <input type="text" id="no-orderDate" placeholder="28/5/2026">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Due date</label>
-        <input type="text" id="no-dueDate" placeholder="27/7/2026">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Total qty</label>
-        <input type="number" id="no-qty" value="1">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Factory</label>
-        <input type="text" id="no-factory" value="PKL">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Zone</label>
-        <select id="no-zone">
-          <option value="GREEN">Green</option>
-          <option value="YELLOW">Yellow</option>
-          <option value="RED">Red</option>
-        </select>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveNewOrder()">Add order</button>
-    </div>
-  `);
-}
-
-function saveNewOrder() {
-  const qty = parseInt(document.getElementById('no-qty').value)||1;
-  appData.orders.push({
-    orderDate: document.getElementById('no-orderDate').value,
-    orderNo: document.getElementById('no-orderNo').value,
-    progress: '',
-    dueDate: document.getElementById('no-dueDate').value,
-    qty: qty,
-    daysElapsed: 0,
-    zone: document.getElementById('no-zone').value,
-    finished: 0,
-    repairQty: 0,
-    balance: qty,
-    factory: document.getElementById('no-factory').value,
-    finishDate: ''
-  });
-  saveStorage();
-  closeModal();
-  renderAll();
-  toast('Order added');
-}
-
-let aiHistory = [];
-
-async function sendAIMessage() {
-  const input = document.getElementById('ai-input');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  addAIMessage(msg, 'user');
-  await askAI(msg);
-}
-
-async function askAI(msg) {
-  if (!document.getElementById('page-ai').classList.contains('active')) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-ai').classList.add('active');
-    document.querySelector('.nav-item[onclick*="ai"]').classList.add('active');
-  }
-
-  addAIMessage(msg, 'user');
-  const loadEl = addLoadingIndicator();
-
-  const systemContext = `You are a production assistant for a jewellery manufacturing operation. You have access to the following live data:
-
-ORDERS:
-${JSON.stringify(appData.orders, null, 2)}
-
-JOBS:
-${JSON.stringify(appData.jobs.slice(0,20), null, 2)}
-
-STONE ORDERS (pending stones):
-${JSON.stringify(appData.stoneOrders.filter(s=>s.complete==='FALSE'), null, 2)}
-
-STONE PURCHASE:
-${JSON.stringify(appData.stonePurchase, null, 2)}
-
-Answer clearly and concisely. Format numbers and dates clearly. Use bullet points for lists.`;
-
-  aiHistory.push({ role: 'user', content: msg });
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemContext,
-        messages: aiHistory
-      })
-    });
-    const data = await res.json();
-    const reply = data.content?.[0]?.text || 'No response';
-    aiHistory.push({ role: 'assistant', content: reply });
-    loadEl.remove();
-    addAIMessage(reply, 'ai');
-  } catch(e) {
-    loadEl.remove();
-    addAIMessage('Error connecting to AI. Please try again.', 'ai');
-  }
-}
-
-function addAIMessage(text, role) {
-  const c = document.getElementById('ai-messages');
-  const el = document.createElement('div');
-  el.className = `msg msg-${role}`;
-  el.textContent = text;
-  c.appendChild(el);
-  c.scrollTop = c.scrollHeight;
-  return el;
-}
-
-function addLoadingIndicator() {
-  const c = document.getElementById('ai-messages');
-  const el = document.createElement('div');
-  el.className = 'msg msg-ai msg-loading';
-  el.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-  c.appendChild(el);
-  c.scrollTop = c.scrollHeight;
-  return el;
-}
-
-function openDetail() {
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('detail-panel').classList.add('open');
-}
-
-function closeDetail() {
-  document.getElementById('overlay').classList.remove('open');
-  document.getElementById('detail-panel').classList.remove('open');
-}
-
-function openModal(html) {
-  document.getElementById('modal-content').innerHTML = html;
-  document.getElementById('modal').style.display = 'block';
-  document.getElementById('modal-overlay').style.display = 'block';
-}
-
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-  document.getElementById('modal-overlay').style.display = 'none';
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2500);
-}
-
-loadStorage();
+loadData();
+populateJobTypeFilter();
+populateSpSupplierFilter();
+renderAll();
 </script>
 </body>
 </html>
