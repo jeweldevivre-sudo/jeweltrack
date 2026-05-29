@@ -666,7 +666,7 @@ function importPoolData(){
         stoneDia:get(cells,'stoneDia'), stoneQtyPer:get(cells,'stoneQtyPer'),
         totalStones:get(cells,'totalStones'), itemKey:get(cells,'itemKey')
       };
-      if(!row.itemKey) row.itemKey=buildItemKey(row);
+      if(!row.itemKey){row.itemKey=buildItemKey(row);row._autoKey=true;}
       rows.push(row);
     }
   } else {
@@ -682,35 +682,61 @@ function importPoolData(){
         stoneDia:c[12]||'', stoneQtyPer:c[13]||'',
         totalStones:c[14]||'', itemKey:c[15]||''
       };
-      if(!row.itemKey) row.itemKey=buildItemKey(row);
+      if(!row.itemKey){row.itemKey=buildItemKey(row);row._autoKey=true;}
       rows.push(row);
     });
   }
 
   if(!rows.length){toast('Could not parse — include the header row when copying');return;}
+
+  // Make auto-generated item keys unique within this batch.
+  // Keys that came straight from the sheet (its own formula) are trusted as-is —
+  // if THOSE collide, the rows really are duplicates and will be skipped on sync.
+  const autoSeen={};
+  rows.forEach(row=>{
+    if(row._autoKey){
+      const base=row.itemKey;
+      if(autoSeen[base]==null){autoSeen[base]=0;}
+      else{
+        autoSeen[base]++;
+        // bump trailing -01 / -00 suffix to keep distinct rows separate
+        row.itemKey=base.replace(/-(\d+)$/,(m,n)=>'-'+String(+n+autoSeen[base]).padStart(2,'0'));
+      }
+    }
+  });
+
   D.pool=rows;
-  const added=syncJobsFromPool(rows);
+  const r=syncJobsFromPool(rows);
   save();renderAll();
-  toast('Imported '+rows.length+' rows → '+added.created+' new, '+added.updated+' updated in Job Master');
+  let msg=r.created+' new, '+r.updated+' updated in Job Master';
+  if(r.skipped>0) msg+=' · '+r.skipped+' duplicate'+(r.skipped>1?'s':'')+' skipped';
+  toast(msg);
   g('pool-paste').value='';
 }
 
-// Push Order Pool rows into Job Master. Existing items (same itemKey) are updated
-// but their production progress (received, finishDate, repair, etc.) is preserved.
+// Push Order Pool rows into Job Master.
+// - Duplicate protection: an item key already in Job Master is UPDATED, never duplicated.
+//   Production progress (received, finishDate, repair, stoneComplete) is always preserved.
+// - Within a single import batch, repeated item keys are de-duplicated (skipped) so an
+//   accidental double-paste cannot create twin rows.
 function syncJobsFromPool(rows){
-  let created=0, updated=0;
-  // track per-order running line number
+  let created=0, updated=0, skipped=0;
   const lineCounters={};
   D.jobs.forEach(j=>{
     const n=parseInt(j.no)||0;
     if(!lineCounters[j.orderNo]||n>lineCounters[j.orderNo]) lineCounters[j.orderNo]=n;
   });
+  const seenThisBatch=new Set();
   rows.forEach(p=>{
     if(!p.itemKey) return;
+    // de-duplicate identical item keys within the same paste
+    if(seenThisBatch.has(p.itemKey)){skipped++;return;}
+    seenThisBatch.add(p.itemKey);
+
     const qty=parseInt(p.qty)||0;
     const existing=D.jobs.find(j=>j.itemKey===p.itemKey);
     if(existing){
-      // update descriptive fields only; keep production progress intact
+      // already in Job Master → update descriptive fields, keep progress
       existing.orderNo=p.orderNo;
       existing.itemType=p.type;
       existing.article=p.article;
@@ -733,7 +759,6 @@ function syncJobsFromPool(rows){
         stoneComplete:'', finishDate:''
       });
       created++;
-      // ensure an order header exists in ORDER MASTER too
       if(!D.orders.find(o=>o.orderNo===p.orderNo)){
         D.orders.push({
           orderDate:new Date().toLocaleDateString('en-GB'),
@@ -744,7 +769,7 @@ function syncJobsFromPool(rows){
       }
     }
   });
-  return {created,updated};
+  return {created,updated,skipped};
 }
 
 // Build Item Key: OrderNo-Article-Size-StoneType-NN (NN=01 if sized, 00 if no size)
