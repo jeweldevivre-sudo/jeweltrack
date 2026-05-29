@@ -7,22 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
 <style>
-/* ── Bloomberg Terminal Style ── */
+/* ── Accounting / Ledger Style ── */
 :root{
-  --bg:#0E0E10;--bg2:#1A1A1D;--bg3:#08080A;
-  --tx:#E8E6E1;--tx2:#9A968E;--tx3:#605C54;
-  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.14);
-  --accent:#FF8C2A;--accent2:#FFA04D;
-  --r:6px;--rl:8px;
+  --bg:#FFFFFF;--bg2:#F6F7F9;--bg3:#EDEFF2;
+  --tx:#1C2530;--tx2:#5A6675;--tx3:#9AA4B2;
+  --bd:rgba(28,37,48,0.09);--bd2:rgba(28,37,48,0.16);
+  --accent:#1B4D8C;--accent2:#2563A8;
+  --r:5px;--rl:7px;
   --font:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;
-  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 12px rgba(0,0,0,.3);
-  --shadow-lg:0 4px 20px rgba(0,0,0,.5),0 1px 4px rgba(0,0,0,.4);
-  --red:#FF4D4D;--red-bg:#2A1012;--red-tx:#FF7A7A;
-  --yel:#FFB627;--yel-bg:#2A2008;--yel-tx:#FFCB5C;
-  --grn:#3FD68C;--grn-bg:#0A2418;--grn-tx:#6EE5AC;
-  --blu-bg:#0C1E2E;--blu-tx:#5EB3F0;
-  --pur-bg:#1E1428;--pur-tx:#C79BE8;
-  --gry-bg:#1C1C1F;--gry-tx:#A09C94;
+  --shadow:0 1px 2px rgba(28,37,48,.06),0 1px 3px rgba(28,37,48,.05);
+  --shadow-lg:0 4px 16px rgba(28,37,48,.12),0 1px 4px rgba(28,37,48,.06);
+  --red:#C0392B;--red-bg:#FBEAE8;--red-tx:#A02D20;
+  --yel:#B8860B;--yel-bg:#FBF3E0;--yel-tx:#8A6508;
+  --grn:#1E7E45;--grn-bg:#E6F4EC;--grn-tx:#15622F;
+  --blu-bg:#E8F0F9;--blu-tx:#1B4D8C;
+  --pur-bg:#EEEAF6;--pur-tx:#5B3F8C;
+  --gry-bg:#EEF0F3;--gry-tx:#5A6675;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg3);color:var(--tx);font-size:13.5px;min-height:100vh;-webkit-font-smoothing:antialiased}
@@ -35,7 +35,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--tx);font-size:13.
 .logo-sub{font-size:10px;color:var(--tx3);margin-top:3px;letter-spacing:.05em;text-transform:uppercase}
 .nav-item{display:flex;align-items:center;gap:10px;padding:8px 1.25rem;cursor:pointer;color:var(--tx2);font-size:13px;transition:all .12s;border-left:2px solid transparent;user-select:none}
 .nav-item:hover{background:var(--bg2);color:var(--tx)}
-.nav-item.active{background:var(--bg2);color:var(--accent);border-left-color:var(--accent);font-weight:500}
+.nav-item.active{background:var(--blu-bg);color:var(--accent);border-left-color:var(--accent);font-weight:600}
 .nav-item i{font-size:16px}
 .nav-sec{font-size:9.5px;font-weight:600;color:var(--tx3);padding:.9rem 1.25rem .35rem;letter-spacing:.1em;text-transform:uppercase}
 /* MAIN */
@@ -46,22 +46,23 @@ body{font-family:var(--font);background:var(--bg3);color:var(--tx);font-size:13.
 .ps{font-size:12.5px;color:var(--tx2);margin-top:4px}
 /* METRICS */
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1.4rem}
-.metric{background:var(--bg);border-radius:var(--r);padding:1rem;border:1px solid var(--bd);position:relative;overflow:hidden}
-.metric::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);opacity:.5}
-.ml{font-size:9.5px;color:var(--tx3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;font-weight:500}
-.mv{font-size:26px;font-weight:600;letter-spacing:-.02em;font-family:var(--mono)}
+.metric{background:var(--bg);border-radius:var(--r);padding:1rem;border:1px solid var(--bd);box-shadow:var(--shadow)}
+.ml{font-size:9.5px;color:var(--tx3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.mv{font-size:25px;font-weight:600;letter-spacing:-.02em;font-family:var(--mono)}
 .mv.red{color:var(--red)}.mv.yel{color:var(--yel)}.mv.grn{color:var(--grn)}
 /* CARDS */
-.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:.875rem}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:.875rem;box-shadow:var(--shadow)}
 .ch{padding:.8rem 1.1rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;background:var(--bg2)}
-.ct{font-size:13px;font-weight:600;letter-spacing:.01em;text-transform:uppercase}
+.ct{font-size:12.5px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--tx)}
 .cb{padding:1.1rem}
-/* TABLE */
+/* TABLE — ledger style */
 table{width:100%;border-collapse:collapse;font-size:12.5px}
-th{text-align:left;padding:8px 11px;color:var(--accent);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--bd2);white-space:nowrap;background:var(--bg2)}
+th{text-align:left;padding:8px 11px;color:var(--tx2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--bd2);white-space:nowrap;background:var(--bg2)}
 td{padding:7px 11px;border-bottom:1px solid var(--bd);vertical-align:middle;font-variant-numeric:tabular-nums}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--bg2)}
+tr:nth-child(even) td{background:var(--bg2)}
+tr:hover td{background:var(--blu-bg)}
+/* numeric columns right-aligned look via tabular nums; keep left default */
 /* BADGES */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:10.5px;font-weight:600;white-space:nowrap;letter-spacing:.02em;text-transform:uppercase}
 .br{background:var(--red-bg);color:var(--red-tx)}
@@ -71,19 +72,18 @@ tr:hover td{background:var(--bg2)}
 .bp{background:var(--pur-bg);color:var(--pur-tx)}
 .bgr{background:var(--gry-bg);color:var(--gry-tx)}
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg2);cursor:pointer;font-size:12.5px;color:var(--tx);transition:all .12s;font-family:var(--font)}
-.btn:hover{background:var(--bd2);border-color:var(--bd2)}.btn:active{transform:scale(.98)}
-.btnp{background:var(--accent);color:#0E0E10;border-color:var(--accent);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);cursor:pointer;font-size:12.5px;color:var(--tx);transition:all .12s;font-family:var(--font)}
+.btn:hover{background:var(--bg2)}.btn:active{transform:scale(.98)}
+.btnp{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
 .btnp:hover{background:var(--accent2);border-color:var(--accent2)}
 .btns{padding:4px 9px;font-size:11.5px}
 .btnd{background:transparent;border-color:transparent;color:var(--tx3)}
 .btnd:hover{background:var(--red-bg);color:var(--red-tx)}
 /* INPUTS */
-input,select,textarea{background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--r);padding:6px 10px;font-size:12.5px;color:var(--tx);font-family:var(--font);outline:none;transition:all .12s}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,140,42,.2)}
+input,select,textarea{background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r);padding:6px 10px;font-size:12.5px;color:var(--tx);font-family:var(--font);outline:none;transition:all .12s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(27,77,140,.15)}
 input::placeholder{color:var(--tx3)}
 td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
-input[type=date]{color-scheme:dark}
 /* FILTERS */
 .frow{display:flex;gap:8px;margin-bottom:.875rem;flex-wrap:wrap}
 .frow input,.frow select{width:auto;flex:1;min-width:130px}
@@ -97,7 +97,7 @@ input[type=date]{color-scheme:dark}
 /* DETAIL PANEL */
 .dp{position:fixed;right:0;top:0;height:100vh;width:440px;background:var(--bg);border-left:1px solid var(--bd2);z-index:300;transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow-lg)}
 .dp.open{transform:translateX(0)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;backdrop-filter:blur(2px)}
+.ov{position:fixed;inset:0;background:rgba(28,37,48,.35);z-index:200;display:none;backdrop-filter:blur(2px)}
 .ov.open{display:block}
 .dl{display:grid;grid-template-columns:130px 1fr;gap:7px 12px;font-size:12.5px;margin-bottom:1rem}
 .dl dt{color:var(--tx2)}.dl dd{font-weight:500}
@@ -108,7 +108,7 @@ input[type=date]{color-scheme:dark}
 /* AI */
 .ai-msgs{overflow-y:auto;padding:1rem 0;display:flex;flex-direction:column;gap:12px;min-height:280px;max-height:calc(100vh - 360px)}
 .msg{max-width:85%;padding:10px 14px;border-radius:var(--rl);font-size:12.5px;line-height:1.6;white-space:pre-wrap}
-.mu{background:var(--accent);color:#0E0E10;align-self:flex-end;border-bottom-right-radius:3px;font-weight:500}
+.mu{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:3px;font-weight:500}
 .ma{background:var(--bg2);border:1px solid var(--bd);align-self:flex-start;border-bottom-left-radius:3px}
 .mld{display:flex;gap:4px;align-items:center;padding:14px}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:bounce 1.2s infinite}
@@ -118,17 +118,17 @@ input[type=date]{color-scheme:dark}
 .air input{flex:1}
 .qbtns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .qb{padding:5px 12px;border:1px solid var(--bd2);border-radius:16px;background:transparent;cursor:pointer;font-size:11.5px;color:var(--tx2);transition:all .12s;font-family:var(--font)}
-.qb:hover{background:var(--bg2);color:var(--accent);border-color:var(--accent)}
+.qb:hover{background:var(--blu-bg);color:var(--accent);border-color:var(--accent)}
 /* MODAL */
-.mbg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.mbg{position:fixed;inset:0;background:rgba(28,37,48,.4);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 .mbg.open{display:flex}
 .modal{background:var(--bg);border:1px solid var(--bd2);border-radius:var(--rl);padding:1.6rem;width:520px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
 .modal h3{font-size:15px;font-weight:600;margin-bottom:1.2rem;letter-spacing:.01em;text-transform:uppercase;color:var(--accent)}
 .fg{margin-bottom:1rem}
-.fl{font-size:11px;color:var(--tx2);margin-bottom:5px;display:block;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.fl{font-size:11px;color:var(--tx2);margin-bottom:5px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 /* TOAST */
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--accent);color:#0E0E10;padding:10px 20px;border-radius:var(--r);font-size:12.5px;font-weight:600;z-index:500;opacity:0;transition:all .3s;pointer-events:none;box-shadow:var(--shadow-lg)}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--tx);color:#fff;padding:10px 20px;border-radius:var(--r);font-size:12.5px;font-weight:600;z-index:500;opacity:0;transition:all .3s;pointer-events:none;box-shadow:var(--shadow-lg)}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10.5px;font-weight:500;background:var(--bg2);color:var(--tx2);border:1px solid var(--bd)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:.875rem}
@@ -136,16 +136,16 @@ input[type=date]{color-scheme:dark}
 .dclose:hover{color:var(--tx)}
 .tw{overflow-x:auto}
 /* STONE PURCHASE */
-.sp-view{border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:.875rem;overflow:hidden}
+.sp-view{border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:.875rem;overflow:hidden;box-shadow:var(--shadow)}
 .sp-header{background:var(--bg2);color:var(--accent);padding:.8rem 1.1rem;font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd2);text-transform:uppercase;letter-spacing:.02em}
 /* MOBILE BOTTOM NAV */
-.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--bd2);z-index:100;padding:6px 0 env(safe-area-inset-bottom)}
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--bd2);z-index:100;padding:6px 0 env(safe-area-inset-bottom);box-shadow:0 -2px 12px rgba(28,37,48,.08)}
 .mob-nav-items{display:flex;justify-content:space-around}
 .mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;color:var(--tx3);font-size:9.5px;min-width:52px;border-radius:6px;transition:all .12s;text-transform:uppercase;letter-spacing:.02em}
 .mob-nav-item.active{color:var(--accent)}
 .mob-nav-item i{font-size:19px}
 /* PRINT */
-@media print{.sidebar,.mob-nav,.frow,.btn,.btns,.btnd{display:none!important}.app{grid-template-columns:1fr}.sp-view{break-inside:avoid}body{background:#fff;color:#000}}
+@media print{.sidebar,.mob-nav,.frow,.btn,.btns,.btnd{display:none!important}.app{grid-template-columns:1fr}.sp-view{break-inside:avoid}}
 /* RESPONSIVE */
 @media(max-width:768px){
   .app{grid-template-columns:1fr}
@@ -227,7 +227,8 @@ input[type=date]{color-scheme:dark}
 <div id="page-jobs" class="page">
   <div class="ph"><div class="pt">Job Master</div><div class="ps">Individual job items — click edit to update Repair, Received, and Finish date</div></div>
   <div class="frow">
-    <input type="text" id="job-search" placeholder="Search order, article, type..." oninput="renderJobs()">
+    <input type="text" id="job-search-order" placeholder="Search order no..." oninput="renderJobs()">
+    <input type="text" id="job-search-article" placeholder="Search article..." oninput="renderJobs()">
     <select id="job-type-f" onchange="renderJobs()"><option value="">All types</option></select>
     <select id="job-fin-f" onchange="renderJobs()"><option value="">All status</option><option value="finished">Finished</option><option value="wip">In progress</option></select>
   </div>
@@ -242,7 +243,7 @@ input[type=date]{color-scheme:dark}
   <div class="ph"><div class="pt">Order Pool</div><div class="ps">Import from Google Sheet — copy all rows from ORDER POOL tab and paste below</div></div>
   <div class="card"><div class="ch"><span class="ct"><i class="ti ti-file-import"></i> Import from Excel / Google Sheet</span></div>
     <div class="cb">
-      <p style="font-size:13px;color:var(--tx2);margin-bottom:.75rem">Select all data rows in ORDER POOL sheet (Ctrl+A) → Copy (Ctrl+C) → Paste below</p>
+      <p style="font-size:13px;color:var(--tx2);margin-bottom:.75rem">In Google Sheets ORDER POOL tab: select the data rows starting from column A (Order No) through column P or Q → Copy → Paste below. Item Key is auto-computed if blank.</p>
       <textarea id="pool-paste" rows="5" placeholder="Paste tab-separated data here..." style="font-family:var(--mono);font-size:12px;margin-bottom:.75rem"></textarea>
       <div style="display:flex;gap:8px">
         <button class="btn btnp" onclick="importPoolData()"><i class="ti ti-upload"></i> Import</button>
@@ -264,12 +265,13 @@ input[type=date]{color-scheme:dark}
 <div id="page-stone_order" class="page">
   <div class="ph"><div class="pt">Stone Orders</div><div class="ps">Edit Supplier, Ordered Date, and Received inline</div></div>
   <div class="frow">
-    <input type="text" id="so-search" placeholder="Search stone, order..." oninput="renderStoneOrders()">
+    <input type="text" id="so-search-order" placeholder="Search order no..." oninput="renderStoneOrders()">
+    <input type="text" id="so-search-article" placeholder="Search article..." oninput="renderStoneOrders()">
     <select id="so-complete-f" onchange="renderStoneOrders()"><option value="">All status</option><option value="FALSE">Pending</option><option value="TRUE">Complete</option></select>
     <select id="so-supplier-f" onchange="renderStoneOrders()"><option value="">All suppliers</option></select>
   </div>
   <div class="card"><div class="tw"><table>
-    <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total qty</th><th>Supplier</th><th>Ordered date</th><th>Received</th><th>Balance</th><th>Complete</th><th>Complete date</th><th></th></tr></thead>
+    <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total qty</th><th>Supplier</th><th>Ordered date</th><th>Received</th><th>Balance</th><th>Status</th><th>Complete date</th><th></th></tr></thead>
     <tbody id="so-body"></tbody>
   </table></div></div>
 </div>
@@ -523,13 +525,28 @@ function renderOrders(){
   sh('orders-body',f.map(r=>{const pct=r.progress?parseFloat(r.progress):0;const c=r.zone==='RED'?'red':r.zone==='YELLOW'?'yel':'grn';const i=D.orders.indexOf(r);return`<tr><td style="color:var(--tx2)">${r.orderDate}</td><td><strong>${r.orderNo}</strong></td><td>${r.dueDate}</td><td>${zbadge(r.zone)}</td><td>${r.qty}</td><td>${r.finished||0}</td><td>${r.balance}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><div class="pf ${c}" style="width:${pct}%"></div></div><span style="font-size:11px">${r.progress||'—'}</span></div></td><td style="white-space:nowrap"><button class="btn btns" onclick="viewOD(${i})"><i class="ti ti-eye"></i></button> <button class="btn btns" onclick="editOrder(${i})"><i class="ti ti-edit"></i></button></td></tr>`;}).join('')||'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
 }
 
-// JOBS — inline Repair + Received editable
+// Derive stone status for a job from Stone Orders (OK when all matching stone orders balance=0)
+function jobStoneOK(j){
+  const stones=D.stoneOrders.filter(s=>s.itemKey===j.itemKey);
+  if(stones.length===0) return j.stoneComplete==='OK'; // fallback to manual flag
+  return stones.every(s=>(+s.balance||0)<=0);
+}
+
+// JOBS
 function renderJobs(){
-  const q=gv('job-search').toLowerCase();const tp=gv('job-type-f');const fin=gv('job-fin-f');
-  const f=D.jobs.filter(r=>(r.orderNo+r.article+r.itemType).toLowerCase().includes(q)&&(!tp||r.itemType===tp)&&(!fin||(fin==='finished'?!!r.finishDate:!r.finishDate)));
+  const qo=gv('job-search-order').toLowerCase();
+  const qa=gv('job-search-article').toLowerCase();
+  const tp=gv('job-type-f');const fin=gv('job-fin-f');
+  const f=D.jobs.filter(r=>
+    (r.orderNo+'').toLowerCase().includes(qo)&&
+    (r.article+'').toLowerCase().includes(qa)&&
+    (!tp||r.itemType===tp)&&
+    (!fin||(fin==='finished'?!!r.finishDate:!r.finishDate))
+  );
   sh('jobs-body',f.map(r=>{
     const i=D.jobs.indexOf(r);
-    const sc=r.stoneComplete==='OK'?'<span class="badge bg"><i class="ti ti-check"></i> OK</span>':'<span class="badge by">Pending</span>';
+    const stoneOK=jobStoneOK(r);
+    const sc=stoneOK?'<span class="badge bg"><i class="ti ti-check"></i> OK</span>':'<span class="badge by">Pending</span>';
     const fd=r.finishDate?`<span class="badge bg">${r.finishDate}</span>`:'<span class="badge bgr">WIP</span>';
     return`<tr>
       <td style="color:var(--tx3)">${r.no}</td>
@@ -591,29 +608,59 @@ function importPoolData(){
   const raw=g('pool-paste').value.trim();
   if(!raw){toast('Paste data first');return;}
   const rows=[];
+  let last=null;
   raw.split('\n').forEach(line=>{
-    const c=line.split('\t');
-    if(c.length>=8&&c[0].trim()&&!['ORDER POOL','Order No'].includes(c[0].trim())){
-      rows.push({
-        orderNo:c[0].trim(),type:(c[1]||'').trim(),
-        article:(c[3]||'').trim(),metal:(c[4]||'').trim(),
-        avgWt:(c[5]||'').trim(),totalWt:(c[6]||'').trim(),wtPurity:(c[7]||'').trim(),
-        size:(c[8]||'').trim(),qty:(c[9]||'').trim(),
-        stoneType:(c[10]||'').trim(),stoneSizing:(c[11]||'').trim(),
-        stoneDia:(c[12]||'').trim(),stoneQtyPer:(c[13]||'').trim(),
-        totalStones:(c[14]||'').trim(),itemKey:(c[15]||'').trim()
-      });
+    const c=line.split('\t').map(x=>(x||'').trim());
+    const orderNo=c[0]||'';
+    // skip header / title rows
+    if(['ORDER POOL','Order No',''].includes(orderNo) && !last) return;
+    if(['ORDER POOL','Order No'].includes(orderNo)) return;
+    // Column map (Google Sheet A-Q with blank C and F):
+    // 0=OrderNo 1=Type 2=(blank) 3=Article 4=Metal 5=(blank)
+    // 6=AvgWt 7=TotalWt 8=WtPurity 9=Size 10=Qty
+    // 11=StoneType 12=StoneSizing 13=StoneDia 14=QtyPer 15=TotalStones 16=ItemKey
+    if(orderNo){
+      // main row — new item
+      const row={
+        orderNo, type:c[1]||'',
+        article:c[3]||'', metal:c[4]||'',
+        avgWt:c[6]||'', totalWt:c[7]||'', wtPurity:c[8]||'',
+        size:c[9]||'', qty:c[10]||'',
+        stoneType:c[11]||'', stoneSizing:c[12]||'',
+        stoneDia:c[13]||'', stoneQtyPer:c[14]||'',
+        totalStones:c[15]||'', itemKey:c[16]||''
+      };
+      // compute item key if missing
+      if(!row.itemKey) row.itemKey=buildItemKey(row);
+      rows.push(row);
+      last=row;
     }
+    // sub-rows (additional stone details, no order no) are ignored for the main table
   });
-  if(!rows.length){toast('Could not parse — check column alignment');return;}
+  if(!rows.length){toast('Could not parse — check that you copied from column A');return;}
   D.pool=rows;save();renderPool();toast('Imported '+rows.length+' rows');
   g('pool-paste').value='';
 }
 
+// Build Item Key: OrderNo-Article-Size-StoneType-NN (NN=01 if sized, 00 if no size)
+function buildItemKey(r){
+  const parts=[r.orderNo, r.article];
+  if(r.size) parts.push(r.size);
+  if(r.stoneType) parts.push(r.stoneType);
+  const suffix=r.size?'01':'00';
+  return parts.join('-')+'-'+suffix;
+}
+
 // STONE ORDERS — inline Supplier, Ordered Date, Received editable
 function renderStoneOrders(){
-  const q=gv('so-search').toLowerCase();const c=gv('so-complete-f');const s=gv('so-supplier-f');
-  const f=D.stoneOrders.filter(r=>(r.orderNo+r.stoneType+r.supplier).toLowerCase().includes(q)&&(!c||r.complete===c)&&(!s||r.supplier===s));
+  const qo=gv('so-search-order').toLowerCase();
+  const qa=gv('so-search-article').toLowerCase();
+  const c=gv('so-complete-f');const s=gv('so-supplier-f');
+  const f=D.stoneOrders.filter(r=>
+    (r.orderNo+'').toLowerCase().includes(qo)&&
+    (r.article+'').toLowerCase().includes(qa)&&
+    (!c||r.complete===c)&&(!s||r.supplier===s)
+  );
   sh('so-body',f.map(r=>{
     const i=D.stoneOrders.indexOf(r);
     const comp=r.complete==='TRUE'?'<span class="badge bg">Complete</span>':'<span class="badge by">Pending</span>';
@@ -758,13 +805,22 @@ function editJob(idx){
   const r=D.jobs[idx];
   openModal(`<h3>Update job item</h3>
     <p style="font-size:12px;color:var(--tx2);margin-bottom:1rem">${r.itemKey}</p>
-    <div class="fr"><div class="fg"><label class="fl">Stone complete</label><select id="js"><option value="">Pending</option><option value="OK"${r.stoneComplete==='OK'?' selected':''}>OK</option></select></div><div class="fg"><label class="fl">Factory</label>${factorySel('jfac',r.factory)}</div></div>
-    <div class="fr"><div class="fg"><label class="fl">Repair qty</label><input type="number" id="jr2" value="${r.repair||0}"></div><div class="fg"><label class="fl">Received qty</label><input type="number" id="jrc" value="${r.received||0}"></div></div>
     <div class="fr">
-      <div class="fg"><label class="fl">Repair sent date <span style="color:var(--tx3)">(if repair > 0)</span></label><input type="date" id="jrsd" value="${toISO(r.repairSentDate)}"></div>
-      <div class="fg"><label class="fl">Repair reason</label><select id="jrr"><option value="">—</option>${REPAIR_REASONS.map(rs=>`<option value="${rs}"${rs===r.repairReason?' selected':''}>${rs}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">Stone complete</label><select id="js"><option value="">Pending</option><option value="OK"${r.stoneComplete==='OK'?' selected':''}>OK</option></select></div>
+      <div class="fg"><label class="fl">Factory</label>${factorySel('jfac',r.factory)}</div>
     </div>
-    <div class="fg"><label class="fl">Finish date</label><input type="date" id="jf" value="${toISO(r.finishDate)}"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Received qty</label><input type="number" id="jrc" value="${r.received||0}"></div>
+      <div class="fg"><label class="fl">Finish date</label><input type="date" id="jf" value="${toISO(r.finishDate)}"></div>
+    </div>
+    <div style="border-top:1px solid var(--bd);margin:1rem 0 .9rem;padding-top:.9rem">
+      <div class="fl" style="margin-bottom:.75rem;color:var(--accent)">Repair (optional)</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Repair qty</label><input type="number" id="jr2" value="${r.repair||0}"></div>
+        <div class="fg"><label class="fl">Repair reason</label><select id="jrr"><option value="">—</option>${REPAIR_REASONS.map(rs=>`<option value="${rs}"${rs===r.repairReason?' selected':''}>${rs}</option>`).join('')}</select></div>
+      </div>
+      <div class="fg"><label class="fl">Repair sent date</label><input type="date" id="jrsd" value="${toISO(r.repairSentDate)}"></div>
+    </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveJob(${idx})">Save</button></div>`);
 }
 function saveJob(idx){
