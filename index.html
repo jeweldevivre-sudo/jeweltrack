@@ -7,102 +7,168 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
 <style>
-:root{--bg:#fff;--bg2:#f7f7f5;--bg3:#f0efe9;--tx:#1a1a18;--tx2:#6b6b67;--tx3:#9e9e9a;--bd:rgba(0,0,0,0.1);--bd2:rgba(0,0,0,0.18);--r:8px;--rl:12px;--font:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;--red:#D85A30;--red-bg:#FAECE7;--red-tx:#993C1D;--yel:#EF9F27;--yel-bg:#FAEEDA;--yel-tx:#854F0B;--grn:#639922;--grn-bg:#EAF3DE;--grn-tx:#3B6D11;--blu-bg:#E6F1FB;--blu-tx:#185FA5;--pur-bg:#EEEDFE;--pur-tx:#534AB7;--gry-bg:#F1EFE8;--gry-tx:#5F5E5A}
-@media(prefers-color-scheme:dark){:root{--bg:#1a1a18;--bg2:#242420;--bg3:#1d1d1a;--tx:#f0efe9;--tx2:#9e9e9a;--tx3:#6b6b67;--bd:rgba(255,255,255,0.1);--bd2:rgba(255,255,255,0.18);--red-bg:#3d1a0e;--red-tx:#F09575;--yel-bg:#3d2a08;--yel-tx:#FAC775;--grn-bg:#1a2e08;--grn-tx:#97C459;--blu-bg:#0d1e30;--blu-tx:#85B7EB;--pur-bg:#1e1b3a;--pur-tx:#AFA9EC;--gry-bg:#2a2a26;--gry-tx:#B4B2A9}}
+/* ── Premium Design System ── */
+:root{
+  --bg:#FAFAF8;--bg2:#F3F2EE;--bg3:#ECEAE4;
+  --tx:#18181A;--tx2:#6B6963;--tx3:#A8A49E;
+  --bd:rgba(24,24,26,0.08);--bd2:rgba(24,24,26,0.15);
+  --accent:#2D6A4F;--accent2:#40916C;
+  --r:10px;--rl:14px;
+  --font:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.1),0 1px 4px rgba(0,0,0,.06);
+  --red:#C0392B;--red-bg:#FDECEA;--red-tx:#922B21;
+  --yel:#D68910;--yel-bg:#FEF9E7;--yel-tx:#9A6005;
+  --grn:#1E8449;--grn-bg:#EAFAF1;--grn-tx:#145A32;
+  --blu-bg:#EBF5FB;--blu-tx:#1A5276;
+  --pur-bg:#F4ECF7;--pur-tx:#6C3483;
+  --gry-bg:#F2F3F4;--gry-tx:#626567;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#18181A;--bg2:#222224;--bg3:#1A1A1C;
+  --tx:#F0EFEA;--tx2:#A8A49E;--tx3:#6B6963;
+  --bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.15);
+  --accent:#52B788;--accent2:#74C69D;
+  --red-bg:#3B0F0A;--red-tx:#F1948A;
+  --yel-bg:#3B2B08;--yel-tx:#F8C471;
+  --grn-bg:#0B2F1A;--grn-tx:#82E0AA;
+  --blu-bg:#0B1F30;--blu-tx:#7FB3D3;
+  --pur-bg:#1E1228;--pur-tx:#C39BD3;
+  --gry-bg:#28282A;--gry-tx:#BFC9CA;
+}}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--bg3);color:var(--tx);font-size:14px;min-height:100vh}
-.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
-.sidebar{background:var(--bg);border-right:0.5px solid var(--bd);padding:1.25rem 0;position:sticky;top:0;height:100vh;overflow-y:auto}
-.logo{padding:0 1.25rem 1.25rem;border-bottom:0.5px solid var(--bd);margin-bottom:.75rem}
-.logo-title{font-size:15px;font-weight:500;display:flex;align-items:center;gap:7px}
-.logo-sub{font-size:11px;color:var(--tx2);margin-top:3px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 1.25rem;cursor:pointer;color:var(--tx2);font-size:13px;transition:all .15s;border-left:2px solid transparent;user-select:none}
+body{font-family:var(--font);background:var(--bg3);color:var(--tx);font-size:14px;min-height:100vh;-webkit-font-smoothing:antialiased}
+/* LAYOUT */
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+/* SIDEBAR */
+.sidebar{background:var(--bg);border-right:1px solid var(--bd);padding:1.5rem 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:0 1.25rem 1.25rem;border-bottom:1px solid var(--bd);margin-bottom:.75rem}
+.logo-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--accent)}
+.logo-sub{font-size:11px;color:var(--tx3);margin-top:3px;letter-spacing:.02em}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;cursor:pointer;color:var(--tx2);font-size:13px;transition:all .15s;border-left:2px solid transparent;user-select:none;border-radius:0 6px 6px 0;margin-right:.5rem}
 .nav-item:hover{background:var(--bg2);color:var(--tx)}
-.nav-item.active{background:var(--bg2);color:var(--tx);border-left-color:var(--tx);font-weight:500}
+.nav-item.active{background:var(--bg2);color:var(--accent);border-left-color:var(--accent);font-weight:500}
 .nav-item i{font-size:16px}
-.nav-sec{font-size:10px;font-weight:500;color:var(--tx3);padding:1rem 1.25rem .4rem;letter-spacing:.06em;text-transform:uppercase}
-.main{padding:1.5rem;overflow-y:auto}
+.nav-sec{font-size:10px;font-weight:600;color:var(--tx3);padding:1rem 1.25rem .4rem;letter-spacing:.08em;text-transform:uppercase}
+/* MAIN */
+.main{padding:1.75rem;overflow-y:auto;min-width:0}
 .page{display:none}.page.active{display:block}
 .ph{margin-bottom:1.5rem}
-.pt{font-size:18px;font-weight:500}
-.ps{font-size:13px;color:var(--tx2);margin-top:3px}
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem}
-.metric{background:var(--bg2);border-radius:var(--r);padding:1rem;border:.5px solid var(--bd)}
-.ml{font-size:10px;color:var(--tx2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
-.mv{font-size:24px;font-weight:500}
+.pt{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.ps{font-size:13px;color:var(--tx2);margin-top:4px}
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.metric{background:var(--bg);border-radius:var(--r);padding:1.1rem;border:1px solid var(--bd);box-shadow:var(--shadow);transition:box-shadow .2s}
+.metric:hover{box-shadow:var(--shadow-lg)}
+.ml{font-size:10px;color:var(--tx3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.mv{font-size:26px;font-weight:600;letter-spacing:-.02em}
 .mv.red{color:var(--red)}.mv.yel{color:var(--yel)}.mv.grn{color:var(--grn)}
-.card{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1rem}
-.ch{padding:.875rem 1.25rem;border-bottom:.5px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.ct{font-size:14px;font-weight:500}
+/* CARDS */
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:1rem;box-shadow:var(--shadow)}
+.ch{padding:.875rem 1.25rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;background:var(--bg)}
+.ct{font-size:14px;font-weight:600;letter-spacing:-.01em}
 .cb{padding:1.25rem}
+/* TABLE */
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:8px 10px;color:var(--tx2);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:.5px solid var(--bd);white-space:nowrap;background:var(--bg2)}
-td{padding:7px 10px;border-bottom:.5px solid var(--bd);vertical-align:middle}
+th{text-align:left;padding:9px 12px;color:var(--tx3);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--bd);white-space:nowrap;background:var(--bg2)}
+td{padding:8px 12px;border-bottom:1px solid var(--bd);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg2)}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;letter-spacing:.01em}
 .br{background:var(--red-bg);color:var(--red-tx)}
 .by{background:var(--yel-bg);color:var(--yel-tx)}
 .bg{background:var(--grn-bg);color:var(--grn-tx)}
 .bb{background:var(--blu-bg);color:var(--blu-tx)}
 .bp{background:var(--pur-bg);color:var(--pur-tx)}
 .bgr{background:var(--gry-bg);color:var(--gry-tx)}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:.5px solid var(--bd2);border-radius:var(--r);background:transparent;cursor:pointer;font-size:13px;color:var(--tx);transition:all .15s;font-family:var(--font)}
-.btn:hover{background:var(--bg2)}.btn:active{transform:scale(.98)}
-.btnp{background:var(--tx);color:var(--bg);border-color:var(--tx)}.btnp:hover{opacity:.85}
-.btns{padding:4px 9px;font-size:12px}
-input,select,textarea{background:var(--bg);border:.5px solid var(--bd2);border-radius:var(--r);padding:6px 9px;font-size:13px;color:var(--tx);font-family:var(--font);outline:none;transition:border-color .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--tx2);box-shadow:0 0 0 3px rgba(0,0,0,.05)}
-td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg);cursor:pointer;font-size:13px;color:var(--tx);transition:all .15s;font-family:var(--font);box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.btn:hover{background:var(--bg2);border-color:var(--bd2)}.btn:active{transform:scale(.98)}
+.btnp{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(45,106,79,.35)}
+.btnp:hover{background:var(--accent2);border-color:var(--accent2)}
+.btns{padding:5px 10px;font-size:12px}
+.btnd{background:transparent;border-color:transparent;color:var(--tx3);box-shadow:none;padding:5px 8px}
+.btnd:hover{background:var(--red-bg);color:var(--red-tx);border-color:transparent}
+/* INPUTS */
+input,select,textarea{background:var(--bg);border:1px solid var(--bd2);border-radius:var(--r);padding:7px 10px;font-size:13px;color:var(--tx);font-family:var(--font);outline:none;transition:all .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,106,79,.12)}
+td input,td select{padding:4px 7px;font-size:12px;border-radius:6px}
+/* FILTERS */
 .frow{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
 .frow input,.frow select{width:auto;flex:1;min-width:130px}
-.pb{background:var(--bd);border-radius:2px;height:5px;overflow:hidden;width:90px}
-.pf{height:100%;border-radius:2px}
+/* PROGRESS */
+.pb{background:var(--bg3);border-radius:3px;height:5px;overflow:hidden;width:80px}
+.pf{height:100%;border-radius:3px;transition:width .3s}
 .pf.red{background:var(--red)}.pf.yel{background:var(--yel)}.pf.grn{background:var(--grn)}
+/* ZONE DOTS */
 .zdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
 .zdot.red{background:var(--red)}.zdot.yel{background:var(--yel)}.zdot.grn{background:var(--grn)}
-.dp{position:fixed;right:0;top:0;height:100vh;width:440px;background:var(--bg);border-left:.5px solid var(--bd);z-index:300;transform:translateX(100%);transition:transform .25s;overflow-y:auto;padding:1.5rem}
+/* DETAIL PANEL */
+.dp{position:fixed;right:0;top:0;height:100vh;width:440px;background:var(--bg);border-left:1px solid var(--bd);z-index:300;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding:1.5rem;box-shadow:var(--shadow-lg)}
 .dp.open{transform:translateX(0)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:200;display:none}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;display:none;backdrop-filter:blur(2px)}
 .ov.open{display:block}
-.dl{display:grid;grid-template-columns:130px 1fr;gap:6px 12px;font-size:13px;margin-bottom:1rem}
+.dl{display:grid;grid-template-columns:130px 1fr;gap:7px 12px;font-size:13px;margin-bottom:1rem}
 .dl dt{color:var(--tx2)}.dl dd{font-weight:500}
-.divider{border:none;border-top:.5px solid var(--bd);margin:1rem 0}
-.srow{padding:7px 0;border-bottom:.5px solid var(--bd);font-size:13px}
+.divider{border:none;border-top:1px solid var(--bd);margin:1rem 0}
+.srow{padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}
 .srow:last-child{border-bottom:none}
 .sn{font-weight:500;margin-bottom:2px}.sm{color:var(--tx2);font-size:12px}
+/* AI */
 .ai-msgs{overflow-y:auto;padding:1rem 0;display:flex;flex-direction:column;gap:12px;min-height:280px;max-height:calc(100vh - 360px)}
-.msg{max-width:85%;padding:10px 14px;border-radius:var(--rl);font-size:13px;line-height:1.6;white-space:pre-wrap}
-.mu{background:var(--tx);color:var(--bg);align-self:flex-end;border-bottom-right-radius:4px}
-.ma{background:var(--bg2);border:.5px solid var(--bd);align-self:flex-start;border-bottom-left-radius:4px}
+.msg{max-width:85%;padding:11px 15px;border-radius:var(--rl);font-size:13px;line-height:1.6;white-space:pre-wrap}
+.mu{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(45,106,79,.3)}
+.ma{background:var(--bg2);border:1px solid var(--bd);align-self:flex-start;border-bottom-left-radius:4px}
 .mld{display:flex;gap:4px;align-items:center;padding:14px}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--tx2);animation:bounce 1.2s infinite}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--tx3);animation:bounce 1.2s infinite}
 .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.air{display:flex;gap:8px;padding:1rem 0 .5rem;border-top:.5px solid var(--bd);margin-top:.75rem}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.air{display:flex;gap:8px;padding:1rem 0 .5rem;border-top:1px solid var(--bd);margin-top:.75rem}
 .air input{flex:1}
 .qbtns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.qb{padding:5px 11px;border:.5px solid var(--bd2);border-radius:20px;background:transparent;cursor:pointer;font-size:12px;color:var(--tx2);transition:all .15s;font-family:var(--font)}
-.qb:hover{background:var(--bg2);color:var(--tx)}
-.mbg{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:400;display:none;align-items:center;justify-content:center}
+.qb{padding:5px 12px;border:1px solid var(--bd2);border-radius:20px;background:transparent;cursor:pointer;font-size:12px;color:var(--tx2);transition:all .15s;font-family:var(--font)}
+.qb:hover{background:var(--grn-bg);color:var(--grn-tx);border-color:var(--grn)}
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 .mbg.open{display:flex}
-.modal{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);padding:1.5rem;width:520px;max-width:94vw;max-height:88vh;overflow-y:auto}
-.modal h3{font-size:16px;font-weight:500;margin-bottom:1rem}
+.modal{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:1.75rem;width:520px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:1.25rem;letter-spacing:-.01em}
 .fg{margin-bottom:1rem}
-.fl{font-size:12px;color:var(--tx2);margin-bottom:5px;display:block}
+.fl{font-size:12px;color:var(--tx2);margin-bottom:5px;display:block;font-weight:500}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--tx);color:var(--bg);padding:10px 20px;border-radius:var(--r);font-size:13px;z-index:500;opacity:0;transition:all .3s;pointer-events:none}
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--tx);color:var(--bg);padding:10px 20px;border-radius:var(--r);font-size:13px;z-index:500;opacity:0;transition:all .3s;pointer-events:none;box-shadow:var(--shadow-lg)}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:11px;background:var(--bg2);color:var(--tx2);border:.5px solid var(--bd)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:var(--bg2);color:var(--tx2);border:1px solid var(--bd)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.dclose{position:absolute;top:1.25rem;right:1.25rem;cursor:pointer;color:var(--tx2);border:none;background:none;font-size:18px}
+.dclose{position:absolute;top:1.25rem;right:1.25rem;cursor:pointer;color:var(--tx3);border:none;background:none;font-size:18px}
 .dclose:hover{color:var(--tx)}
 .tw{overflow-x:auto}
-.sp-view{border:.5px solid var(--bd);border-radius:var(--rl);margin-bottom:1rem;overflow:hidden}
-.sp-header{background:var(--pur-bg);color:var(--pur-tx);padding:.75rem 1.25rem;font-weight:500;font-size:14px;display:flex;justify-content:space-between;align-items:center}
-.sp-print-btn{font-size:12px;padding:4px 10px}
-@media print{.sidebar,.frow,.sp-print-btn,.btn,.btns{display:none!important}.app{grid-template-columns:1fr}.sp-view{break-inside:avoid}}
-@media(max-width:700px){.app{grid-template-columns:1fr}.sidebar{display:none}.two{grid-template-columns:1fr}}
+/* STONE PURCHASE */
+.sp-view{border:1px solid var(--bd);border-radius:var(--rl);margin-bottom:1rem;overflow:hidden;box-shadow:var(--shadow)}
+.sp-header{background:linear-gradient(135deg,var(--pur-bg),var(--bg2));color:var(--pur-tx);padding:.875rem 1.25rem;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd)}
+/* MOBILE BOTTOM NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--bd);z-index:100;padding:6px 0 env(safe-area-inset-bottom);box-shadow:0 -4px 16px rgba(0,0,0,.08)}
+.mob-nav-items{display:flex;justify-content:space-around}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;color:var(--tx3);font-size:10px;min-width:52px;border-radius:8px;transition:all .15s}
+.mob-nav-item.active{color:var(--accent)}
+.mob-nav-item i{font-size:20px}
+/* PRINT */
+@media print{.sidebar,.mob-nav,.frow,.btn,.btns,.btnd{display:none!important}.app{grid-template-columns:1fr}.sp-view{break-inside:avoid}}
+/* RESPONSIVE */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .mob-nav{display:block}
+  .main{padding:1rem;padding-bottom:80px}
+  .two{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .fr{grid-template-columns:1fr}
+  .dp{width:100vw}
+  th,td{padding:6px 8px;font-size:12px}
+  .pt{font-size:17px}
+}
 </style>
 </head>
 <body>
@@ -115,7 +181,6 @@ td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
   <div class="nav-sec">Overview</div>
   <div class="nav-item active" data-page="dashboard"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
   <div class="nav-sec">Orders</div>
-  <div class="nav-item" data-page="orders"><i class="ti ti-clipboard-list"></i> Order Master</div>
   <div class="nav-item" data-page="jobs"><i class="ti ti-tool"></i> Job Master</div>
   <div class="nav-item" data-page="pool"><i class="ti ti-database-import"></i> Order Pool</div>
   <div class="nav-sec">Stones</div>
@@ -126,6 +191,16 @@ td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
   <div class="nav-sec">Assistant</div>
   <div class="nav-item" data-page="ai"><i class="ti ti-sparkles"></i> AI Assistant</div>
 </nav>
+<!-- Mobile bottom nav -->
+<div class="mob-nav">
+  <div class="mob-nav-items">
+    <div class="mob-nav-item active" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+    <div class="mob-nav-item" data-page="jobs"><i class="ti ti-tool"></i>Jobs</div>
+    <div class="mob-nav-item" data-page="stone_order"><i class="ti ti-triangle"></i>Stones</div>
+    <div class="mob-nav-item" data-page="stone_purchase"><i class="ti ti-receipt"></i>Purchase</div>
+    <div class="mob-nav-item" data-page="ai"><i class="ti ti-sparkles"></i>AI</div>
+  </div>
+</div>
 <main class="main">
 
 <!-- DASHBOARD -->
@@ -137,7 +212,7 @@ td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
     <div class="card"><div class="ch"><span class="ct">Stone delivery status</span></div><div class="cb" id="dash-stones"></div></div>
   </div>
   <div class="card"><div class="ch"><span class="ct">All orders</span></div><div class="tw">
-    <table><thead><tr><th>Order no</th><th>Due date</th><th>Zone</th><th>Progress</th><th>Finished</th><th>Balance</th><th>Days</th></tr></thead>
+    <table><thead><tr><th>Order no</th><th>Due date</th><th>Zone</th><th>Factory</th><th>Progress</th><th>Finished</th><th>Balance</th><th>Days</th><th>Finish date</th></tr></thead>
     <tbody id="dash-orders"></tbody></table>
   </div></div>
 </div>
@@ -160,14 +235,14 @@ td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
 
 <!-- JOB MASTER -->
 <div id="page-jobs" class="page">
-  <div class="ph"><div class="pt">Job Master</div><div class="ps">Individual job items — edit Repair and Received inline</div></div>
+  <div class="ph"><div class="pt">Job Master</div><div class="ps">Individual job items — click edit to update Repair, Received, and Finish date</div></div>
   <div class="frow">
     <input type="text" id="job-search" placeholder="Search order, article, type..." oninput="renderJobs()">
     <select id="job-type-f" onchange="renderJobs()"><option value="">All types</option></select>
     <select id="job-fin-f" onchange="renderJobs()"><option value="">All status</option><option value="finished">Finished</option><option value="wip">In progress</option></select>
   </div>
   <div class="card"><div class="tw"><table>
-    <thead><tr><th>#</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Metal</th><th>Qty</th><th>Repair</th><th>Received</th><th>Balance</th><th>Stone</th><th>Finish date</th><th></th></tr></thead>
+    <thead><tr><th>#</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Metal</th><th>Factory</th><th>Qty</th><th>Repair</th><th>Received</th><th>Balance</th><th>Stone</th><th>Finish date</th><th></th></tr></thead>
     <tbody id="jobs-body"></tbody>
   </table></div></div>
 </div>
@@ -204,7 +279,7 @@ td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
     <select id="so-supplier-f" onchange="renderStoneOrders()"><option value="">All suppliers</option></select>
   </div>
   <div class="card"><div class="tw"><table>
-    <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total qty</th><th>Supplier</th><th>Ordered date</th><th>Received</th><th>Balance</th><th>Complete</th><th>Rcvd date</th><th></th></tr></thead>
+    <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total qty</th><th>Supplier</th><th>Ordered date</th><th>Received</th><th>Balance</th><th>Complete</th><th>Complete date</th><th></th></tr></thead>
     <tbody id="so-body"></tbody>
   </table></div></div>
 </div>
@@ -267,7 +342,12 @@ td input,td select{width:100%;min-width:70px;padding:4px 6px;font-size:12px}
 <div class="toast" id="toast"></div>
 
 <script>
+// DATE HELPERS
+function toISO(d){if(!d)return'';const p=d.split('/');if(p.length===3)return`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;return d;}
+function fromISO(d){if(!d)return'';const p=d.split('-');if(p.length===3)return`${p[2]}/${p[1]}/${p[0]}`;return d;}
+
 const SUPPLIERS = ['Vanyaa','Ideal','PinThai','PSG','Juluur'];
+const REPAIR_REASONS = ['CROOK','POROSITY','DEFORM','POLISH','STONE'];
 
 const SEED = {
   orders:[
@@ -359,22 +439,27 @@ const SEED = {
 };
 
 let D={};
-const SK='jeweltrack_v3';
-function loadData(){try{const s=localStorage.getItem(SK);if(s){const p=JSON.parse(s);D={...JSON.parse(JSON.stringify(SEED)),...p};}}catch(e){D=JSON.parse(JSON.stringify(SEED));} if(!D.orders)D=JSON.parse(JSON.stringify(SEED));}
-function save(){localStorage.setItem(SK,JSON.stringify(D));}
+let FACTORIES=['PKL','Dabaan','Ideal'];
+const SK='jeweltrack_v4';
+function loadData(){try{const s=localStorage.getItem(SK);if(s){const p=JSON.parse(s);D={...JSON.parse(JSON.stringify(SEED)),...p};if(p.factories)FACTORIES=p.factories;}}catch(e){D=JSON.parse(JSON.stringify(SEED));} if(!D.orders)D=JSON.parse(JSON.stringify(SEED));
+  // ensure every job with repair>0 has a matching auto repair entry
+  D.jobs.forEach(j=>{if((+j.repair||0)>0)syncRepairForJob(j);});
+}
+function save(){D.factories=FACTORIES;localStorage.setItem(SK,JSON.stringify(D));}
 function g(id){return document.getElementById(id);}
 function gv(id){return g(id).value;}
 function sh(id,h){g(id).innerHTML=h;}
 function toast(m){const e=g('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500);}
 
-// NAV
-document.querySelectorAll('.nav-item').forEach(el=>{
-  el.addEventListener('click',()=>{
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    el.classList.add('active');
-    g('page-'+el.dataset.page).classList.add('active');
-  });
+// NAV (sidebar + mobile)
+function navTo(page){
+  document.querySelectorAll('.nav-item,.mob-nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll(`[data-page="${page}"]`).forEach(n=>n.classList.add('active'));
+  g('page-'+page).classList.add('active');
+}
+document.querySelectorAll('.nav-item,.mob-nav-item').forEach(el=>{
+  el.addEventListener('click',()=>navTo(el.dataset.page));
 });
 
 // HELPERS
@@ -401,22 +486,44 @@ function inlineSet(field,idx,val){
   save();renderAll();
 }
 
+// Compute order stats from Job Master (single source of truth)
+function orderStats(orderNo){
+  const jobs=D.jobs.filter(j=>j.orderNo===orderNo);
+  const totalQty=jobs.reduce((s,j)=>s+(+j.qty||0),0);
+  const received=jobs.reduce((s,j)=>s+(+j.received||0),0);
+  const balance=jobs.reduce((s,j)=>s+(+j.balance||0),0);
+  const finished=received;
+  const pct=totalQty>0?(received/totalQty*100):0;
+  const jobDates=jobs.filter(j=>j.finishDate).map(j=>j.finishDate);
+  const latestFinish=jobDates.length?jobDates.sort().reverse()[0]:'';
+  return {totalQty,received,balance,finished,pct,latestFinish};
+}
+
 // DASHBOARD
 function renderDashboard(){
   const o=D.orders;
   const red=o.filter(x=>x.zone==='RED').length;
   const yel=o.filter(x=>x.zone==='YELLOW').length;
   const grn=o.filter(x=>x.zone==='GREEN').length;
-  const bal=o.reduce((s,x)=>s+(x.balance||0),0);
+  const bal=o.reduce((s,x)=>s+orderStats(x.orderNo).balance,0);
   const pend=D.stoneOrders.filter(x=>x.complete==='FALSE').length;
   g('dash-updated').textContent='Last updated: '+new Date().toLocaleDateString('en-GB');
   sh('dash-metrics',`<div class="metric"><div class="ml">Total orders</div><div class="mv">${o.length}</div></div><div class="metric"><div class="ml">Red zone</div><div class="mv red">${red}</div></div><div class="metric"><div class="ml">Yellow zone</div><div class="mv yel">${yel}</div></div><div class="metric"><div class="ml">Green zone</div><div class="mv grn">${grn}</div></div><div class="metric"><div class="ml">Total balance</div><div class="mv">${bal}</div></div><div class="metric"><div class="ml">Pending stones</div><div class="mv yel">${pend}</div></div>`);
-  sh('dash-zones',`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span><span class="zdot red" style="margin-right:5px"></span>Red</span><strong>${red}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span><span class="zdot yel" style="margin-right:5px"></span>Yellow</span><strong>${yel}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span><span class="zdot grn" style="margin-right:5px"></span>Green</span><strong>${grn}</strong></div>`);
+  sh('dash-zones',`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><span><span class="zdot red" style="margin-right:5px"></span>Red</span><strong>${red}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><span><span class="zdot yel" style="margin-right:5px"></span>Yellow</span><strong>${yel}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span><span class="zdot grn" style="margin-right:5px"></span>Green</span><strong>${grn}</strong></div>`);
   const p=D.stonePurchase.filter(x=>x.status==='PENDING RECEIVE').length;
   const pt=D.stonePurchase.filter(x=>x.status==='PARTIAL RECEIVE').length;
   const rv=D.stonePurchase.filter(x=>x.status==='RECEIVED').length;
-  sh('dash-stones',`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span>Pending</span><strong style="color:var(--yel)">${p}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:.5px solid var(--bd)"><span>Partial</span><strong style="color:#185FA5">${pt}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span>Received</span><strong style="color:var(--grn)">${rv}</strong></div>`);
-  sh('dash-orders',o.map(r=>{const pct=r.progress?parseFloat(r.progress):0;const c=r.zone==='RED'?'red':r.zone==='YELLOW'?'yel':'grn';return`<tr><td><strong>${r.orderNo}</strong></td><td>${r.dueDate}</td><td>${zbadge(r.zone)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><div class="pf ${c}" style="width:${pct}%"></div></div><span style="font-size:11px">${r.progress||'—'}</span></div></td><td>${r.finished||0}</td><td>${r.balance}</td><td>${r.daysElapsed||'—'}</td></tr>`;}).join(''));
+  sh('dash-stones',`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><span>Pending</span><strong style="color:var(--yel)">${p}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><span>Partial</span><strong style="color:var(--blu-tx)">${pt}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span>Received</span><strong style="color:var(--grn)">${rv}</strong></div>`);
+  sh('dash-orders',o.map(r=>{
+    const st=orderStats(r.orderNo);
+    const pct=Math.round(st.pct*100)/100;
+    const c=r.zone==='RED'?'red':r.zone==='YELLOW'?'yel':'grn';
+    const showFinish=st.balance===0&&st.latestFinish;
+    // factory: most common among this order's jobs
+    const facs=D.jobs.filter(j=>j.orderNo===r.orderNo).map(j=>j.factory).filter(Boolean);
+    const factory=facs.length?[...new Set(facs)].join(', '):(r.factory||'—');
+    return`<tr><td><strong>${r.orderNo}</strong></td><td>${r.dueDate}</td><td>${zbadge(r.zone)}</td><td><span class="tag">${factory}</span></td><td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><div class="pf ${c}" style="width:${pct}%"></div></div><span style="font-size:11px">${pct>0?pct+'%':'—'}</span></div></td><td>${st.finished}</td><td>${st.balance}</td><td>${r.daysElapsed||'—'}</td><td>${showFinish?`<span class="badge bg">${st.latestFinish}</span>`:'<span style="color:var(--tx3)">—</span>'}</td></tr>`;
+  }).join(''));
 }
 
 // ORDERS
@@ -441,21 +548,30 @@ function renderJobs(){
       <td>${r.article}</td>
       <td>${r.size||'—'}</td>
       <td style="font-size:12px;color:var(--tx2)">${r.metal}</td>
+      <td><span class="tag">${r.factory||'—'}</span></td>
       <td>${r.qty}</td>
-      <td><input type="number" value="${r.repair||0}" style="width:55px" onchange="inlineSet('job_repair',${i},+this.value);inlineCalcJob(${i})"></td>
-      <td><input type="number" value="${r.received||0}" style="width:55px" onchange="inlineSet('job_received',${i},+this.value);inlineCalcJob(${i})"></td>
-      <td id="jbal-${i}">${r.balance}</td>
+      <td>${r.repair||0}</td>
+      <td>${r.received||0}</td>
+      <td>${r.balance}</td>
       <td>${sc}</td>
       <td>${fd}</td>
-      <td><button class="btn btns" onclick="editJob(${i})"><i class="ti ti-edit"></i></button></td>
+      <td style="white-space:nowrap">
+        <button class="btn btns" onclick="editJob(${i})"><i class="ti ti-edit"></i></button>
+        <button class="btn btnd" onclick="deleteJob(${i})" title="Delete row"><i class="ti ti-x"></i></button>
+      </td>
     </tr>`;
-  }).join('')||'<tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
+  }).join('')||'<tr><td colspan="14" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
 }
 function inlineCalcJob(i){
   const r=D.jobs[i];
   r.balance=r.qty-(+r.received||0);
   save();
   const el=g('jbal-'+i);if(el)el.textContent=r.balance;
+}
+function deleteJob(i){
+  if(!confirm('Delete this job item?')) return;
+  D.jobs.splice(i,1);
+  save();renderJobs();toast('Row deleted');
 }
 
 function populateJobTypeFilter(){
@@ -518,11 +634,11 @@ function renderStoneOrders(){
       <td>${r.stoneSize}</td>
       <td>${r.totalQty}</td>
       <td>${supSel(r.supplier,i,'so_supplier')}</td>
-      <td><input type="text" value="${r.orderedDate||''}" placeholder="26/5/2026" onchange="inlineSet('so_orderedDate',${i},this.value)"></td>
+      <td><input type="date" value="${toISO(r.orderedDate)}" onchange="inlineSet('so_orderedDate',${i},fromISO(this.value))"></td>
       <td><input type="number" value="${r.received||0}" style="width:65px" onchange="inlineSet('so_received',${i},+this.value)"></td>
       <td id="sobal-${i}">${r.balance||0}</td>
       <td>${comp}</td>
-      <td><input type="text" value="${r.receivedDate||''}" placeholder="28/5/2026" onchange="inlineSet('so_receivedDate',${i},this.value)"></td>
+      <td><input type="date" value="${toISO(r.receivedDate)}" onchange="inlineSet('so_receivedDate',${i},fromISO(this.value))"></td>
       <td><button class="btn btns" onclick="viewSODetail(${i})"><i class="ti ti-eye"></i></button></td>
     </tr>`;
   }).join('')||'<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
@@ -540,16 +656,19 @@ function renderStonePurchase(){
     return`<div class="sp-view">
       <div class="sp-header"><span><i class="ti ti-diamond" style="margin-right:6px"></i>${sup} <span style="font-size:12px;font-weight:400;margin-left:8px">${pending} pending / ${rows.length} total</span></span></div>
       <table>
-        <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Dia</th><th>Total</th><th>Balance</th><th>Ordered</th><th>Rcvd date</th><th>Status</th></tr></thead>
-        <tbody>${rows.map(r=>{const i=D.stonePurchase.indexOf(r);return`<tr>
+        <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total</th><th>Balance</th><th>Ordered</th><th>Status</th></tr></thead>
+        <tbody>${rows.map(r=>{const i=D.stonePurchase.indexOf(r);
+          // balance from matching stone order
+          const soMatch=D.stoneOrders.find(s=>s.itemKey===r.jobId||s.orderNo===r.orderNo&&s.stoneType===r.stoneType);
+          const displayBal=soMatch!==undefined?soMatch.balance:r.balance;
+          return`<tr>
           <td>${r.orderNo}</td>
           <td><span class="tag">${r.itemType}</span></td>
           <td>${r.stoneType}</td>
           <td>${r.stoneDia}</td>
           <td>${r.totalQty}</td>
-          <td><input type="number" value="${r.balance}" style="width:65px" onchange="inlineSet('sp_balance',${i},+this.value)"></td>
+          <td><strong>${displayBal}</strong></td>
           <td>${r.orderedDate}</td>
-          <td><input type="text" value="${r.receivedDate||''}" placeholder="28/5/2026" onchange="inlineSPDate(${i},this.value)"></td>
           <td>${sbadge(r.status)}</td>
         </tr>`;}).join('')}</tbody>
       </table>
@@ -567,14 +686,18 @@ function inlineSPDate(i,val){
 
 // REPAIR — inline Ref.Job, Reason dropdown, Received Date
 function renderRepairs(){
-  if(!D.repairs.length){sh('repair-body','<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--tx3)">No repair jobs — click Log repair to add</td></tr>');return;}
-  sh('repair-body',D.repairs.map((r,i)=>{
-    const reasons=['CROOK','POROSITY','DEFORM','POLISH'];
-    const reasonSel=`<select onchange="inlineSet('rep_repairReason',${i},this.value)">${reasons.map(rs=>`<option value="${rs}"${rs===r.repairReason?' selected':''}>${rs}</option>`).join('')}</select>`;
+  if(!D.repairs.length){sh('repair-body','<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--tx3)">No repair jobs — add Repair qty in Job Master, or click Log repair</td></tr>');return;}
+  // sort by sent date (ISO compare) but keep original index for inline edits
+  const sorted=D.repairs.map((r,i)=>({r,i})).sort((a,b)=>{
+    const da=toISO(a.r.sentDate)||'9999',db=toISO(b.r.sentDate)||'9999';
+    return da<db?-1:da>db?1:0;
+  });
+  sh('repair-body',sorted.map(({r,i})=>{
+    const reasonSel=`<select onchange="inlineSet('rep_repairReason',${i},this.value)">${REPAIR_REASONS.map(rs=>`<option value="${rs}"${rs===r.repairReason?' selected':''}>${rs}</option>`).join('')}</select>`;
     const done=!!r.receivedDate;
     const st=done?'<span class="badge bg">Done</span>':'<span class="badge by">Pending</span>';
     return`<tr style="${done?'opacity:.7':''}">
-      <td>${r.sentDate}</td>
+      <td>${r.sentDate||'<span style="color:var(--tx3)">—</span>'}</td>
       <td><input type="text" value="${r.refJob||''}" placeholder="Ref..." onchange="inlineSet('rep_refJob',${i},this.value)"></td>
       <td style="font-size:11px;color:var(--tx3)" title="${r.itemKey||''}">${(r.itemKey||r.article||'').substring(0,20)}…</td>
       <td>${r.orderNo}</td>
@@ -582,10 +705,10 @@ function renderRepairs(){
       <td>${r.article}</td>
       <td>${r.size||'—'}</td>
       <td>${r.qty}</td>
-      <td>${r.factory}</td>
+      <td><span class="tag">${r.factory}</span></td>
       <td>${st}</td>
       <td>${reasonSel}</td>
-      <td><input type="text" value="${r.receivedDate||''}" placeholder="28/5/2026" onchange="inlineSet('rep_receivedDate',${i},this.value)"></td>
+      <td><input type="date" value="${toISO(r.receivedDate)}" onchange="inlineSet('rep_receivedDate',${i},fromISO(this.value))"></td>
     </tr>`;
   }).join(''));
 }
@@ -630,49 +753,103 @@ function editOrder(idx){
   const r=D.orders[idx];
   openModal(`<h3>Edit order ${r.orderNo}</h3>
     <div class="fr"><div class="fg"><label class="fl">Progress %</label><input id="ep" value="${r.progress||''}"></div><div class="fg"><label class="fl">Finished items</label><input type="number" id="ef" value="${r.finished||0}"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Balance</label><input type="number" id="eb" value="${r.balance||0}"></div><div class="fg"><label class="fl">Finish date</label><input id="efd" value="${r.finishDate||''}" placeholder="28/5/2026"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Balance</label><input type="number" id="eb" value="${r.balance||0}"></div><div class="fg"><label class="fl">Finish date</label><input type="date" id="efd" value="${toISO(r.finishDate)}"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Zone</label><select id="ez"><option value="RED"${r.zone==='RED'?' selected':''}>Red</option><option value="YELLOW"${r.zone==='YELLOW'?' selected':''}>Yellow</option><option value="GREEN"${r.zone==='GREEN'?' selected':''}>Green</option></select></div><div class="fg"><label class="fl">Days elapsed</label><input type="number" id="ede" value="${r.daysElapsed||0}"></div></div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveOrder(${idx})">Save</button></div>`);
 }
-function saveOrder(idx){D.orders[idx].progress=gv('ep');D.orders[idx].finished=+gv('ef')||0;D.orders[idx].balance=+gv('eb')||0;D.orders[idx].finishDate=gv('efd');D.orders[idx].zone=gv('ez');D.orders[idx].daysElapsed=+gv('ede')||0;save();closeModal();renderAll();toast('Order updated');}
+function saveOrder(idx){D.orders[idx].progress=gv('ep');D.orders[idx].finished=+gv('ef')||0;D.orders[idx].balance=+gv('eb')||0;D.orders[idx].finishDate=fromISO(gv('efd'));D.orders[idx].zone=gv('ez');D.orders[idx].daysElapsed=+gv('ede')||0;save();closeModal();renderAll();toast('Order updated');}
 
+function factorySel(id,cur){
+  return `<select id="${id}" onchange="if(this.value==='__add__'){const n=prompt('New factory name:');if(n){FACTORIES.push(n);save();this.innerHTML=factoryOpts(n);}else{this.value='${cur||FACTORIES[0]}'}}">${factoryOpts(cur)}</select>`;
+}
+function factoryOpts(cur){
+  return FACTORIES.map(f=>`<option value="${f}"${f===cur?' selected':''}>${f}</option>`).join('')+`<option value="__add__">+ Add factory…</option>`;
+}
 function editJob(idx){
   const r=D.jobs[idx];
   openModal(`<h3>Update job item</h3>
     <p style="font-size:12px;color:var(--tx2);margin-bottom:1rem">${r.itemKey}</p>
-    <div class="fr"><div class="fg"><label class="fl">Stone complete</label><select id="js"><option value="">Pending</option><option value="OK"${r.stoneComplete==='OK'?' selected':''}>OK</option></select></div><div class="fg"><label class="fl">Finish date</label><input id="jf" value="${r.finishDate||''}" placeholder="28/5/2026"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Stone complete</label><select id="js"><option value="">Pending</option><option value="OK"${r.stoneComplete==='OK'?' selected':''}>OK</option></select></div><div class="fg"><label class="fl">Factory</label>${factorySel('jfac',r.factory)}</div></div>
     <div class="fr"><div class="fg"><label class="fl">Repair qty</label><input type="number" id="jr2" value="${r.repair||0}"></div><div class="fg"><label class="fl">Received qty</label><input type="number" id="jrc" value="${r.received||0}"></div></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Repair sent date <span style="color:var(--tx3)">(if repair > 0)</span></label><input type="date" id="jrsd" value="${toISO(r.repairSentDate)}"></div>
+      <div class="fg"><label class="fl">Repair reason</label><select id="jrr"><option value="">—</option>${REPAIR_REASONS.map(rs=>`<option value="${rs}"${rs===r.repairReason?' selected':''}>${rs}</option>`).join('')}</select></div>
+    </div>
+    <div class="fg"><label class="fl">Finish date</label><input type="date" id="jf" value="${toISO(r.finishDate)}"></div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveJob(${idx})">Save</button></div>`);
 }
-function saveJob(idx){D.jobs[idx].stoneComplete=gv('js');D.jobs[idx].finishDate=gv('jf');D.jobs[idx].repair=+gv('jr2')||0;D.jobs[idx].received=+gv('jrc')||0;D.jobs[idx].balance=D.jobs[idx].qty-(+gv('jrc')||0);save();closeModal();renderAll();toast('Job updated');}
+function saveJob(idx){
+  const j=D.jobs[idx];
+  j.stoneComplete=gv('js');
+  j.finishDate=fromISO(gv('jf'));
+  j.repair=+gv('jr2')||0;
+  j.received=+gv('jrc')||0;
+  j.balance=j.qty-(+gv('jrc')||0);
+  j.factory=gv('jfac');
+  j.repairSentDate=fromISO(gv('jrsd'));
+  j.repairReason=gv('jrr');
+  // auto-create/update a Repair Job when repair qty > 0
+  syncRepairForJob(j);
+  save();closeModal();renderAll();toast('Job updated');
+}
+// Keep Repair Jobs in sync with Job Master repair entries
+function syncRepairForJob(j){
+  const existing=D.repairs.find(r=>r.itemKey===j.itemKey&&r.auto);
+  if(j.repair>0){
+    if(existing){
+      existing.sentDate=j.repairSentDate||existing.sentDate;
+      existing.qty=j.repair;
+      existing.repairReason=j.repairReason||existing.repairReason;
+      existing.factory=j.factory;
+    }else{
+      D.repairs.push({
+        sentDate:j.repairSentDate||'',refJob:'',itemKey:j.itemKey,orderNo:j.orderNo,
+        type:j.itemType,article:j.article,size:j.size,qty:j.repair,factory:j.factory,
+        repairStatus:'PENDING',repairReason:j.repairReason||'CROOK',receivedDate:'',auto:true
+      });
+    }
+  }else if(existing&&!existing.receivedDate){
+    // repair qty cleared and not yet received → remove auto entry
+    D.repairs=D.repairs.filter(r=>r!==existing);
+  }
+}
 
 function openAddOrder(){
   openModal(`<h3>Add new order</h3>
-    <div class="fr"><div class="fg"><label class="fl">Order no</label><input id="no1" placeholder="JD00-000132"></div><div class="fg"><label class="fl">Order date</label><input id="no2" placeholder="28/5/2026"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Due date</label><input id="no3" placeholder="27/7/2026"></div><div class="fg"><label class="fl">Total qty</label><input type="number" id="no4" value="1"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Order no</label><input id="no1" placeholder="JD00-000132"></div><div class="fg"><label class="fl">Order date</label><input type="date" id="no2"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Due date</label><input type="date" id="no3"></div><div class="fg"><label class="fl">Total qty</label><input type="number" id="no4" value="1"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Factory</label><input id="no5" value="PKL"></div><div class="fg"><label class="fl">Zone</label><select id="no6"><option value="GREEN">Green</option><option value="YELLOW">Yellow</option><option value="RED">Red</option></select></div></div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveNewOrder()">Add</button></div>`);
 }
-function saveNewOrder(){const qty=+gv('no4')||1;D.orders.push({orderDate:gv('no2'),orderNo:gv('no1'),progress:'',dueDate:gv('no3'),qty,daysElapsed:0,zone:gv('no6'),finished:0,balance:qty,factory:gv('no5'),finishDate:''});save();closeModal();renderAll();toast('Order added');}
+function saveNewOrder(){const qty=+gv('no4')||1;D.orders.push({orderDate:fromISO(gv('no2')),orderNo:gv('no1'),progress:'',dueDate:fromISO(gv('no3')),qty,daysElapsed:0,zone:gv('no6'),finished:0,balance:qty,factory:gv('no5'),finishDate:''});save();closeModal();renderAll();toast('Order added');}
 
 function openAddRepair(){
+  const jobOpts=D.jobs.map((j,i)=>`<option value="${i}">${j.orderNo} — ${j.itemType} ${j.article}${j.size?' sz '+j.size:''}</option>`).join('');
   openModal(`<h3>Log repair job</h3>
-    <div class="fr"><div class="fg"><label class="fl">Sent date</label><input id="rp1" placeholder="28/5/2026"></div><div class="fg"><label class="fl">Order no</label><input id="rp2"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Item type</label><input id="rp3" placeholder="Ring..."></div><div class="fg"><label class="fl">Article</label><input id="rp4"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Item key</label><input id="rpk" placeholder="Item key..."></div><div class="fg"><label class="fl">Size</label><input id="rp5"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Qty</label><input type="number" id="rp6" value="1"></div><div class="fg"><label class="fl">Factory</label><input id="rp7" value="PKL"></div></div>
-    <div class="fg"><label class="fl">Repair reason</label><select id="rp8"><option>CROOK</option><option>POROSITY</option><option>DEFORM</option><option>POLISH</option></select></div>
+    <div class="fg"><label class="fl">Select job item (pulls data from Job Master)</label>
+      <select id="rp-job"><option value="">— Select job item —</option>${jobOpts}</select></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Sent date</label><input type="date" id="rp1"></div>
+      <div class="fg"><label class="fl">Ref. job</label><input id="rp-ref" placeholder="Ref..."></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Repair reason</label><select id="rp8">${REPAIR_REASONS.map(rs=>`<option>${rs}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">Qty</label><input type="number" id="rp6" value="1"></div>
+    </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btnp" onclick="saveRepair()">Log</button></div>`);
 }
-function saveRepair(){D.repairs.push({sentDate:gv('rp1'),refJob:'',itemKey:gv('rpk'),orderNo:gv('rp2'),type:gv('rp3'),article:gv('rp4'),size:gv('rp5'),qty:+gv('rp6')||1,factory:gv('rp7'),repairStatus:'PENDING',repairReason:gv('rp8'),receivedDate:''});save();closeModal();renderRepairs();toast('Repair logged');}
+function saveRepair(){
+  const ji=gv('rp-job');
+  if(ji===''){toast('Please select a job item');return;}
+  const j=D.jobs[+ji];
+  D.repairs.push({sentDate:fromISO(gv('rp1')),refJob:gv('rp-ref'),itemKey:j.itemKey,orderNo:j.orderNo,type:j.itemType,article:j.article,size:j.size,qty:+gv('rp6')||1,factory:j.factory,repairStatus:'PENDING',repairReason:gv('rp8'),receivedDate:''});
+  save();closeModal();renderRepairs();toast('Repair logged');
+}
 
 // AI
 let aiH=[];
 async function sendQuick(msg){
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelector('[data-page="ai"]').classList.add('active');
-  g('page-ai').classList.add('active');
+  navTo('ai');
   await doAI(msg);
 }
 async function submitAI(){const msg=g('ai-input').value.trim();if(!msg)return;g('ai-input').value='';await doAI(msg);}
@@ -702,6 +879,9 @@ function addLoader(){const c=g('ai-msgs');const el=document.createElement('div')
 function renderAll(){renderDashboard();renderOrders();renderJobs();renderPool();renderStoneOrders();renderStonePurchase();renderRepairs();}
 
 loadData();
+// One-time sync: ensure jobs with repair>0 appear in Repair Jobs
+D.jobs.forEach(j=>{if(j.repair>0)syncRepairForJob(j);});
+save();
 populateJobTypeFilter();
 populateSpSupplierFilter();
 renderAll();
