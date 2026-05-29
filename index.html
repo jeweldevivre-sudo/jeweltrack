@@ -6,6 +6,8 @@
 <title>JewelTrack — Production Management</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 /* ── Accounting / Ledger Style ── */
 :root{
@@ -119,6 +121,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 .qbtns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .qb{padding:5px 12px;border:1px solid var(--bd2);border-radius:16px;background:transparent;cursor:pointer;font-size:11.5px;color:var(--tx2);transition:all .12s;font-family:var(--font)}
 .qb:hover{background:var(--blu-bg);color:var(--accent);border-color:var(--accent)}
+.qb.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 /* MODAL */
 .mbg{position:fixed;inset:0;background:rgba(28,37,48,.4);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 .mbg.open{display:flex}
@@ -179,7 +182,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
   <div class="nav-sec">Workshop</div>
   <div class="nav-item" data-page="repair"><i class="ti ti-bandage"></i> Repair Jobs</div>
   <div class="nav-sec">Assistant</div>
-  <div class="nav-item" data-page="ai"><i class="ti ti-sparkles"></i> AI Assistant</div>
+  <div class="nav-item" data-page="ai"><i class="ti ti-help"></i> User Guide</div>
 </nav>
 <!-- Mobile bottom nav -->
 <div class="mob-nav">
@@ -188,7 +191,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
     <div class="mob-nav-item" data-page="jobs"><i class="ti ti-tool"></i>Jobs</div>
     <div class="mob-nav-item" data-page="stone_order"><i class="ti ti-triangle"></i>Stones</div>
     <div class="mob-nav-item" data-page="stone_purchase"><i class="ti ti-receipt"></i>Purchase</div>
-    <div class="mob-nav-item" data-page="ai"><i class="ti ti-sparkles"></i>AI</div>
+    <div class="mob-nav-item" data-page="ai"><i class="ti ti-help"></i>Guide</div>
   </div>
 </div>
 <main class="main">
@@ -285,7 +288,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
     </select>
     <select id="sp-status-f" onchange="renderStonePurchase()"><option value="">All status</option><option value="PENDING RECEIVE">Pending</option><option value="PARTIAL RECEIVE">Partial</option><option value="RECEIVED">Received</option></select>
     <input type="text" id="sp-search" placeholder="Search stone, order..." oninput="renderStonePurchase()">
-    <button class="btn" onclick="window.print()"><i class="ti ti-printer"></i> Print</button>
+    <button class="btn btnp" onclick="exportStonePurchasePDF()"><i class="ti ti-file-type-pdf"></i> Export PDF</button>
   </div>
   <div id="sp-content"></div>
 </div>
@@ -304,23 +307,99 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 
 <!-- AI -->
 <div id="page-ai" class="page">
-  <div class="ph"><div class="pt">AI Assistant</div><div class="ps">Ask about orders, stones, production status</div></div>
-  <div class="card"><div class="cb" style="display:flex;flex-direction:column">
-    <div class="qbtns">
-      <button class="qb" onclick="sendQuick('Which orders are in the RED zone?')">Red zone orders</button>
-      <button class="qb" onclick="sendQuick('What stones are still pending delivery?')">Pending stones</button>
-      <button class="qb" onclick="sendQuick('Summarize order 1096 in detail')">Order 1096</button>
-      <button class="qb" onclick="sendQuick('Which job items are fully finished?')">Finished items</button>
-      <button class="qb" onclick="sendQuick('Total stone balance from Vanyaa?')">Vanyaa balance</button>
+  <div class="ph"><div class="pt">User Guide</div><div class="ps">What each section does and how to use it — tap a button to jump</div></div>
+
+  <div class="qbtns" style="margin-bottom:1.25rem">
+    <button class="qb active" id="gb-flow" onclick="guideShow('flow')">Overview</button>
+    <button class="qb" id="gb-dashboard" onclick="guideShow('dashboard')">Dashboard</button>
+    <button class="qb" id="gb-pool" onclick="guideShow('pool')">Order Pool</button>
+    <button class="qb" id="gb-jobs" onclick="guideShow('jobs')">Job Master</button>
+    <button class="qb" id="gb-stoneorder" onclick="guideShow('stoneorder')">Stone Orders</button>
+    <button class="qb" id="gb-stonepurchase" onclick="guideShow('stonepurchase')">Stone Purchase</button>
+    <button class="qb" id="gb-repair" onclick="guideShow('repair')">Repair Jobs</button>
+    <button class="qb" id="gb-tips" onclick="guideShow('tips')">Tips</button>
+  </div>
+
+  <div class="card guide-sec" id="g-flow">
+    <div class="ch"><span class="ct"><i class="ti ti-route" style="color:var(--accent)"></i> Overview — how the system flows</span></div>
+    <div class="cb">
+      <p style="font-size:13px;line-height:1.7;color:var(--tx2);margin-bottom:1rem">Data flows in one direction. You import once, then update progress as work happens — everything else updates automatically.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12.5px">
+        <span class="badge bb">1. Order Pool</span><i class="ti ti-arrow-right" style="color:var(--tx3)"></i>
+        <span class="badge bb">2. Job Master</span><i class="ti ti-arrow-right" style="color:var(--tx3)"></i>
+        <span class="badge bb">3. Dashboard</span>
+        <span style="color:var(--tx3);margin:0 6px">+</span>
+        <span class="badge bp">Stone Orders</span><i class="ti ti-arrow-right" style="color:var(--tx3)"></i>
+        <span class="badge bp">Stone Purchase</span>
+        <span style="color:var(--tx3);margin:0 6px">+</span>
+        <span class="badge br">Repair Jobs</span>
+      </div>
     </div>
-    <div class="ai-msgs" id="ai-msgs">
-      <div class="msg ma">Hello! I have access to your production data. Ask me anything about orders, stones, or production status.</div>
+  </div>
+
+  <div class="card guide-sec" id="g-dashboard" style="display:none">
+    <div class="ch"><span class="ct"><i class="ti ti-layout-dashboard" style="color:var(--accent)"></i> Dashboard</span></div>
+    <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
+      <strong style="color:var(--tx)">What it shows:</strong> A live summary of every order — counts by zone (Red / Yellow / Green), total balance, pending stones, and stone delivery status.<br><br>
+      <strong style="color:var(--tx)">How to use:</strong> Read-only overview. The Finished, Balance, Progress and Finish date columns are calculated automatically from Job Master — nothing is edited here. Finish date appears once an order's balance reaches 0.
     </div>
-    <div class="air">
-      <input type="text" id="ai-input" placeholder="Ask about orders, stones..." onkeydown="if(event.key==='Enter')submitAI()">
-      <button class="btn btnp" onclick="submitAI()"><i class="ti ti-send"></i></button>
+  </div>
+
+  <div class="card guide-sec" id="g-pool" style="display:none">
+    <div class="ch"><span class="ct"><i class="ti ti-database-import" style="color:var(--accent)"></i> Order Pool</span></div>
+    <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
+      <strong style="color:var(--tx)">What it does:</strong> The starting point for new work — copy data from Google Sheet / Excel (without the header row), paste it, and press Import.<br><br>
+      <strong style="color:var(--tx)">How to use:</strong>
+      <ul style="margin:.5rem 0 0;padding-left:1.2rem">
+        <li>Put the order number in the first column of the file (No.)</li>
+        <li>No merged cells allowed</li>
+        <li>If a row has different details, spread them across separate rows as in the example</li>
+        <li>Copy only the production data rows — skip the header row</li>
+      </ul>
     </div>
-  </div></div>
+  </div>
+
+  <div class="card guide-sec" id="g-jobs" style="display:none">
+    <div class="ch"><span class="ct"><i class="ti ti-tool" style="color:var(--accent)"></i> Job Master</span></div>
+    <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
+      <strong style="color:var(--tx)">What it does:</strong> The heart of production tracking — one row per item. This is the single source of truth that feeds the Dashboard.<br><br>
+      <strong style="color:var(--tx)">How to use:</strong> Search by order no or article. Click the edit icon to update Received qty, Repair qty, Factory, Stone status and Finish date. Balance updates automatically. Setting Repair qty creates a Repair Job entry. Use the ✕ button to delete a row.
+    </div>
+  </div>
+
+  <div class="card guide-sec" id="g-stoneorder" style="display:none">
+    <div class="ch"><span class="ct"><i class="ti ti-triangle" style="color:var(--accent)"></i> Stone Orders</span></div>
+    <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
+      <strong style="color:var(--tx)">What it does:</strong> Tracks the stones needed per item — who supplies them, how many received, and what's still outstanding.<br><br>
+      <strong style="color:var(--tx)">How to use:</strong> Edit Supplier, Ordered date, Received qty and Complete date directly in the row. When Received reaches the total, Status flips to Complete and the matching Job Master item shows Stone OK.
+    </div>
+  </div>
+
+  <div class="card guide-sec" id="g-stonepurchase" style="display:none">
+    <div class="ch"><span class="ct"><i class="ti ti-receipt" style="color:var(--accent)"></i> Stone Purchase</span></div>
+    <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
+      <strong style="color:var(--tx)">What it does:</strong> Groups outstanding stones by supplier so you can send purchase requests.<br><br>
+      <strong style="color:var(--tx)">How to use:</strong> Filter by supplier, then Export PDF to send the list to that supplier. Balance is read live from Stone Orders, so it always reflects what's truly outstanding.
+    </div>
+  </div>
+
+  <div class="card guide-sec" id="g-repair" style="display:none">
+    <div class="ch"><span class="ct"><i class="ti ti-bandage" style="color:var(--accent)"></i> Repair Jobs</span></div>
+    <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
+      <strong style="color:var(--tx)">What it does:</strong> Lists items sent back for rework. Entries are created automatically when you set a Repair qty in Job Master.<br><br>
+      <strong style="color:var(--tx)">How to use:</strong> Fill in the Ref. Job and the Received date when the repair returns. Once a Received date is set, the row is marked Done. Rows are sorted by sent date. Repair reason (Crook, Porosity, Deform, Polish, Stone) comes from Job Master.
+    </div>
+  </div>
+
+  <div class="card guide-sec" id="g-tips" style="display:none">
+    <div class="ch"><span class="ct"><i class="ti ti-bulb" style="color:var(--accent)"></i> Tips</span></div>
+    <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
+      • <strong style="color:var(--tx)">Zones</strong> indicate urgency by due date: Red = urgent, Yellow = approaching, Green = on track.<br>
+      • <strong style="color:var(--tx)">Re-import the same Google Sheet / Excel anytime</strong> — finished work and edits are never overwritten.<br>
+      • To add a new factory, choose <strong style="color:var(--tx)">"+ Add factory…"</strong> in the Job Master edit window.<br>
+      • All data is saved in your browser, so each device keeps its own copy.
+    </div>
+  </div>
 </div>
 
 </main>
@@ -851,6 +930,50 @@ function inlineSPDate(i,val){
   save();renderStonePurchase();
 }
 
+// Export the currently-filtered Stone Purchase list to a PDF, grouped by supplier
+function exportStonePurchasePDF(){
+  if(!window.jspdf||!window.jspdf.jsPDF){toast('PDF library still loading — try again');return;}
+  const qs=gv('sp-search').toLowerCase();const st=gv('sp-status-f');const selSup=gv('sp-supplier-f');
+  const all=D.stonePurchase.filter(r=>(r.supplier+r.orderNo+r.stoneType).toLowerCase().includes(qs)&&(!st||r.status===st)&&(!selSup||r.supplier===selSup));
+  if(!all.length){toast('Nothing to export');return;}
+  const sups=[...new Set(all.map(r=>r.supplier))].sort();
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const today=new Date().toLocaleDateString('en-GB');
+  let y=16;
+  doc.setFontSize(15);doc.setTextColor(27,77,140);
+  doc.text('Stone Purchase Request',14,y);
+  doc.setFontSize(9);doc.setTextColor(120);
+  doc.text('Generated: '+today,14,y+5);
+  y+=12;
+  sups.forEach(sup=>{
+    const rows=all.filter(r=>r.supplier===sup).map(r=>{
+      const soMatch=D.stoneOrders.find(s=>s.itemKey===r.jobId||(s.orderNo===r.orderNo&&s.stoneType===r.stoneType));
+      const bal=soMatch!==undefined?soMatch.balance:r.balance;
+      return [r.orderNo,r.itemType,r.stoneType,r.stoneDia,String(r.totalQty),String(bal),r.orderedDate,statusLabel(r.status)];
+    });
+    // page-break if near bottom
+    if(y>260){doc.addPage();y=16;}
+    doc.setFontSize(11);doc.setTextColor(91,63,140);
+    doc.text(sup+'  ('+rows.length+' items)',14,y);
+    y+=2;
+    doc.autoTable({
+      startY:y,
+      head:[['Order','Type','Stone','Size','Total','Balance','Ordered','Status']],
+      body:rows,
+      theme:'grid',
+      headStyles:{fillColor:[27,77,140],fontSize:8,halign:'left'},
+      bodyStyles:{fontSize:8},
+      margin:{left:14,right:14},
+      tableLineWidth:0.1
+    });
+    y=doc.lastAutoTable.finalY+12;
+  });
+  doc.save('stone-purchase-'+today.replace(/\//g,'-')+'.pdf');
+  toast('PDF exported');
+}
+function statusLabel(s){return s==='RECEIVED'?'Received':s==='PARTIAL RECEIVE'?'Partial':'Pending';}
+
 // REPAIR — inline Ref.Job, Reason dropdown, Received Date
 function renderRepairs(){
   if(!D.repairs.length){sh('repair-body','<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--tx3)">No repair jobs — set Repair qty in Job Master to generate entries here</td></tr>');return;}
@@ -1021,34 +1144,13 @@ function saveRepair(){
   save();closeModal();renderRepairs();toast('Repair logged');
 }
 
-// AI
-let aiH=[];
-async function sendQuick(msg){
-  navTo('ai');
-  await doAI(msg);
+// USER GUIDE — show only the selected section
+function guideShow(key){
+  ['flow','dashboard','pool','jobs','stoneorder','stonepurchase','repair','tips'].forEach(k=>{
+    const sec=g('g-'+k); if(sec) sec.style.display = (k===key)?'':'none';
+    const btn=g('gb-'+k); if(btn) btn.classList.toggle('active',k===key);
+  });
 }
-async function submitAI(){const msg=g('ai-input').value.trim();if(!msg)return;g('ai-input').value='';await doAI(msg);}
-async function doAI(msg){
-  addMsg(msg,'mu');
-  const loader=addLoader();
-  aiH.push({role:'user',content:msg});
-  const sys=`You are a production assistant for a jewellery manufacturer. Answer in the same language as the user (Thai or English).
-ORDERS: ${JSON.stringify(D.orders)}
-STONE ORDERS (pending): ${JSON.stringify(D.stoneOrders.filter(s=>s.complete==='FALSE'))}
-STONE PURCHASE: ${JSON.stringify(D.stonePurchase)}
-JOBS (first 15): ${JSON.stringify(D.jobs.slice(0,15))}
-REPAIRS: ${JSON.stringify(D.repairs)}
-Answer concisely with specific numbers and dates.`;
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:aiH})});
-    const data=await res.json();
-    const reply=data.content?.[0]?.text||'No response.';
-    aiH.push({role:'assistant',content:reply});
-    loader.remove();addMsg(reply,'ma');
-  }catch(e){loader.remove();addMsg('Connection error.','ma');}
-}
-function addMsg(text,cls){const c=g('ai-msgs');const el=document.createElement('div');el.className='msg '+cls;el.textContent=text;c.appendChild(el);c.scrollTop=c.scrollHeight;}
-function addLoader(){const c=g('ai-msgs');const el=document.createElement('div');el.className='msg ma mld';el.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';c.appendChild(el);c.scrollTop=c.scrollHeight;return el;}
 
 // RENDER ALL
 function renderAll(){renderDashboard();renderOrders();renderJobs();renderPool();renderStoneOrders();renderStonePurchase();renderRepairs();}
