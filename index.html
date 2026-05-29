@@ -227,10 +227,10 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 <div id="page-jobs" class="page">
   <div class="ph"><div class="pt">Job Master</div><div class="ps">Individual job items — click edit to update Repair, Received, and Finish date</div></div>
   <div class="frow">
-    <input type="text" id="job-search-order" placeholder="Search order no..." oninput="renderJobs()">
-    <input type="text" id="job-search-article" placeholder="Search article..." oninput="renderJobs()">
-    <select id="job-type-f" onchange="renderJobs()"><option value="">All types</option></select>
-    <select id="job-fin-f" onchange="renderJobs()"><option value="">All status</option><option value="finished">Finished</option><option value="wip">In progress</option></select>
+    <div style="flex:1;min-width:130px"><label class="fl">Search order</label><input type="text" id="job-search-order" placeholder="Order no..." oninput="renderJobs()" style="width:100%"></div>
+    <div style="flex:1;min-width:130px"><label class="fl">Search article</label><input type="text" id="job-search-article" placeholder="Article..." oninput="renderJobs()" style="width:100%"></div>
+    <div style="flex:1;min-width:130px"><label class="fl">Type</label><select id="job-type-f" onchange="renderJobs()" style="width:100%"><option value="">All types</option></select></div>
+    <div style="flex:1;min-width:130px"><label class="fl">Status</label><select id="job-fin-f" onchange="renderJobs()" style="width:100%"><option value="">All status</option><option value="finished">Finished</option><option value="wip">In progress</option></select></div>
   </div>
   <div class="card"><div class="tw"><table>
     <thead><tr><th>#</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Metal</th><th>Factory</th><th>Qty</th><th>Repair</th><th>Received</th><th>Balance</th><th>Stone</th><th>Finish date</th><th></th></tr></thead>
@@ -265,10 +265,10 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 <div id="page-stone_order" class="page">
   <div class="ph"><div class="pt">Stone Orders</div><div class="ps">Edit Supplier, Ordered Date, and Received inline</div></div>
   <div class="frow">
-    <input type="text" id="so-search-order" placeholder="Search order no..." oninput="renderStoneOrders()">
-    <input type="text" id="so-search-article" placeholder="Search article..." oninput="renderStoneOrders()">
-    <select id="so-complete-f" onchange="renderStoneOrders()"><option value="">All status</option><option value="FALSE">Pending</option><option value="TRUE">Complete</option></select>
-    <select id="so-supplier-f" onchange="renderStoneOrders()"><option value="">All suppliers</option></select>
+    <div style="flex:1;min-width:130px"><label class="fl">Search order</label><input type="text" id="so-search-order" placeholder="Order no..." oninput="renderStoneOrders()" style="width:100%"></div>
+    <div style="flex:1;min-width:130px"><label class="fl">Search article</label><input type="text" id="so-search-article" placeholder="Article..." oninput="renderStoneOrders()" style="width:100%"></div>
+    <div style="flex:1;min-width:130px"><label class="fl">Status</label><select id="so-complete-f" onchange="renderStoneOrders()" style="width:100%"><option value="">All status</option><option value="FALSE">Pending</option><option value="TRUE">Complete</option></select></div>
+    <div style="flex:1;min-width:130px"><label class="fl">Supplier</label><select id="so-supplier-f" onchange="renderStoneOrders()" style="width:100%"><option value="">All suppliers</option></select></div>
   </div>
   <div class="card"><div class="tw"><table>
     <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total qty</th><th>Supplier</th><th>Ordered date</th><th>Received</th><th>Balance</th><th>Status</th><th>Complete date</th><th></th></tr></thead>
@@ -621,14 +621,18 @@ function importPoolData(){
     // 11=StoneType 12=StoneSizing 13=StoneDia 14=QtyPer 15=TotalStones 16=ItemKey
     if(orderNo){
       // main row — new item
+      // Pasted columns (blank C/Photo present, but F collapses out):
+      // 0=OrderNo 1=Type 2=(blank Photo) 3=Article 4=Metal
+      // 5=AvgWt 6=TotalWt 7=WtPurity 8=Size 9=Qty
+      // 10=StoneType 11=StoneSizing 12=StoneDia 13=QtyPer 14=TotalStones 15=ItemKey
       const row={
         orderNo, type:c[1]||'',
         article:c[3]||'', metal:c[4]||'',
-        avgWt:c[6]||'', totalWt:c[7]||'', wtPurity:c[8]||'',
-        size:c[9]||'', qty:c[10]||'',
-        stoneType:c[11]||'', stoneSizing:c[12]||'',
-        stoneDia:c[13]||'', stoneQtyPer:c[14]||'',
-        totalStones:c[15]||'', itemKey:c[16]||''
+        avgWt:c[5]||'', totalWt:c[6]||'', wtPurity:c[7]||'',
+        size:c[8]||'', qty:c[9]||'',
+        stoneType:c[10]||'', stoneSizing:c[11]||'',
+        stoneDia:c[12]||'', stoneQtyPer:c[13]||'',
+        totalStones:c[14]||'', itemKey:c[15]||''
       };
       // compute item key if missing
       if(!row.itemKey) row.itemKey=buildItemKey(row);
