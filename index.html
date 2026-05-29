@@ -240,7 +240,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 
 <!-- ORDER POOL -->
 <div id="page-pool" class="page">
-  <div class="ph"><div class="pt">Order Pool</div><div class="ps">Import from Google Sheet — copy all rows from ORDER POOL tab and paste below</div></div>
+  <div class="ph"><div class="pt">Order Pool</div><div class="ps">Import from Google Sheet — rows are auto-added to Job Master (existing items keep their progress)</div></div>
   <div class="card"><div class="ch"><span class="ct"><i class="ti ti-file-import"></i> Import from Excel / Google Sheet</span></div>
     <div class="cb">
       <p style="font-size:13px;color:var(--tx2);margin-bottom:.75rem">In Google Sheets: select <strong>including the header row</strong> (Order No, Type, Article, …) down through the data → Copy → Paste below. Columns are matched by header name, so any layout works. Item Key is auto-computed if blank.</p>
@@ -688,9 +688,63 @@ function importPoolData(){
   }
 
   if(!rows.length){toast('Could not parse — include the header row when copying');return;}
-  D.pool=rows;save();renderPool();
-  toast('Imported '+rows.length+' rows'+(headerIdx>=0?' (matched by header)':''));
+  D.pool=rows;
+  const added=syncJobsFromPool(rows);
+  save();renderAll();
+  toast('Imported '+rows.length+' rows → '+added.created+' new, '+added.updated+' updated in Job Master');
   g('pool-paste').value='';
+}
+
+// Push Order Pool rows into Job Master. Existing items (same itemKey) are updated
+// but their production progress (received, finishDate, repair, etc.) is preserved.
+function syncJobsFromPool(rows){
+  let created=0, updated=0;
+  // track per-order running line number
+  const lineCounters={};
+  D.jobs.forEach(j=>{
+    const n=parseInt(j.no)||0;
+    if(!lineCounters[j.orderNo]||n>lineCounters[j.orderNo]) lineCounters[j.orderNo]=n;
+  });
+  rows.forEach(p=>{
+    if(!p.itemKey) return;
+    const qty=parseInt(p.qty)||0;
+    const existing=D.jobs.find(j=>j.itemKey===p.itemKey);
+    if(existing){
+      // update descriptive fields only; keep production progress intact
+      existing.orderNo=p.orderNo;
+      existing.itemType=p.type;
+      existing.article=p.article;
+      existing.size=p.size;
+      existing.metal=p.metal;
+      if(qty>0){
+        existing.qty=qty;
+        existing.balance=qty-(+existing.received||0);
+      }
+      updated++;
+    }else{
+      lineCounters[p.orderNo]=(lineCounters[p.orderNo]||0)+1;
+      const no=String(lineCounters[p.orderNo]).padStart(2,'0');
+      D.jobs.push({
+        orderDate:new Date().toLocaleDateString('en-GB'),
+        orderNo:p.orderNo, no, itemKey:p.itemKey,
+        itemType:p.type, article:p.article, size:p.size,
+        qty, repair:0, received:0, balance:qty,
+        metal:p.metal, factory:FACTORIES[0]||'PKL',
+        stoneComplete:'', finishDate:''
+      });
+      created++;
+      // ensure an order header exists in ORDER MASTER too
+      if(!D.orders.find(o=>o.orderNo===p.orderNo)){
+        D.orders.push({
+          orderDate:new Date().toLocaleDateString('en-GB'),
+          orderNo:p.orderNo, progress:'', dueDate:'', qty:0,
+          daysElapsed:0, zone:'GREEN', finished:0, balance:0,
+          factory:FACTORIES[0]||'PKL', finishDate:''
+        });
+      }
+    }
+  });
+  return {created,updated};
 }
 
 // Build Item Key: OrderNo-Article-Size-StoneType-NN (NN=01 if sized, 00 if no size)
