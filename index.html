@@ -243,7 +243,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
   <div class="ph"><div class="pt">Order Pool</div><div class="ps">Import from Google Sheet — copy all rows from ORDER POOL tab and paste below</div></div>
   <div class="card"><div class="ch"><span class="ct"><i class="ti ti-file-import"></i> Import from Excel / Google Sheet</span></div>
     <div class="cb">
-      <p style="font-size:13px;color:var(--tx2);margin-bottom:.75rem">In Google Sheets ORDER POOL tab: select the data rows starting from column A (Order No) through column P or Q → Copy → Paste below. Item Key is auto-computed if blank.</p>
+      <p style="font-size:13px;color:var(--tx2);margin-bottom:.75rem">In Google Sheets: select <strong>including the header row</strong> (Order No, Type, Article, …) down through the data → Copy → Paste below. Columns are matched by header name, so any layout works. Item Key is auto-computed if blank.</p>
       <textarea id="pool-paste" rows="5" placeholder="Paste tab-separated data here..." style="font-family:var(--mono);font-size:12px;margin-bottom:.75rem"></textarea>
       <div style="display:flex;gap:8px">
         <button class="btn btnp" onclick="importPoolData()"><i class="ti ti-upload"></i> Import</button>
@@ -607,42 +607,89 @@ function renderPool(){
 function importPoolData(){
   const raw=g('pool-paste').value.trim();
   if(!raw){toast('Paste data first');return;}
+  const lines=raw.split('\n').map(l=>l.split('\t').map(x=>(x||'').trim()));
+
+  // ── Find the header row by matching known column names ──
+  const HEADER_ALIASES={
+    orderNo:['order no','order number','order','№','ne','no'],
+    type:['type'],
+    article:['article'],
+    metal:['metal color, sample','metal color','metal','metal colour'],
+    avgWt:['average weight','avg weight','avg wt'],
+    totalWt:['total weight','total wt'],
+    wtPurity:['weight in purity','wt purity','weight purity','purity'],
+    size:['size'],
+    qty:['quantity','qty'],
+    stoneType:['stone type'],
+    stoneSizing:['stone sizing'],
+    stoneDia:['stone diameter, mm','stone diameter','stone dia','diameter'],
+    stoneQtyPer:['quantity','qty per','qty/pc','stone/pc'],
+    totalStones:['total stones'],
+    itemKey:['item key','itemkey','key']
+  };
+  function norm(s){return (s||'').toLowerCase().replace(/\s+/g,' ').trim();}
+
+  let headerIdx=-1, colMap={};
+  for(let i=0;i<Math.min(lines.length,6);i++){
+    const cells=lines[i].map(norm);
+    // a header row should contain at least these
+    if(cells.includes('article') && (cells.includes('type')||cells.includes('stone type'))){
+      headerIdx=i;
+      // map each field to the FIRST matching column index
+      for(const field in HEADER_ALIASES){
+        for(let ci=0;ci<cells.length;ci++){
+          if(HEADER_ALIASES[field].includes(cells[ci])){colMap[field]=ci;break;}
+        }
+      }
+      // special: "Quantity" appears twice (item qty K, stone qty O).
+      // First Quantity = qty (item), the one right after stone sizing/dia = stoneQtyPer
+      const qtyCols=[];
+      cells.forEach((c,ci)=>{if(c==='quantity'||c==='qty')qtyCols.push(ci);});
+      if(qtyCols.length>=2){colMap.qty=qtyCols[0];colMap.stoneQtyPer=qtyCols[qtyCols.length-1];}
+      break;
+    }
+  }
+
   const rows=[];
-  let last=null;
-  raw.split('\n').forEach(line=>{
-    const c=line.split('\t').map(x=>(x||'').trim());
-    const orderNo=c[0]||'';
-    // skip header / title rows
-    if(['ORDER POOL','Order No',''].includes(orderNo) && !last) return;
-    if(['ORDER POOL','Order No'].includes(orderNo)) return;
-    // Column map (Google Sheet A-Q with blank C and F):
-    // 0=OrderNo 1=Type 2=(blank) 3=Article 4=Metal 5=(blank)
-    // 6=AvgWt 7=TotalWt 8=WtPurity 9=Size 10=Qty
-    // 11=StoneType 12=StoneSizing 13=StoneDia 14=QtyPer 15=TotalStones 16=ItemKey
-    if(orderNo){
-      // main row — new item
-      // Pasted columns (blank C/Photo present, but F collapses out):
-      // 0=OrderNo 1=Type 2=(blank Photo) 3=Article 4=Metal
-      // 5=AvgWt 6=TotalWt 7=WtPurity 8=Size 9=Qty
-      // 10=StoneType 11=StoneSizing 12=StoneDia 13=QtyPer 14=TotalStones 15=ItemKey
+  if(headerIdx>=0){
+    // ── Header found: map by column index from header ──
+    const get=(cells,field)=>colMap[field]!=null?(cells[colMap[field]]||''):'';
+    for(let i=headerIdx+1;i<lines.length;i++){
+      const cells=lines[i];
+      const orderNo=get(cells,'orderNo');
+      if(!orderNo) continue; // skip sub-rows / blanks
       const row={
-        orderNo, type:c[1]||'',
-        article:c[3]||'', metal:c[4]||'',
+        orderNo, type:get(cells,'type'), article:get(cells,'article'), metal:get(cells,'metal'),
+        avgWt:get(cells,'avgWt'), totalWt:get(cells,'totalWt'), wtPurity:get(cells,'wtPurity'),
+        size:get(cells,'size'), qty:get(cells,'qty'),
+        stoneType:get(cells,'stoneType'), stoneSizing:get(cells,'stoneSizing'),
+        stoneDia:get(cells,'stoneDia'), stoneQtyPer:get(cells,'stoneQtyPer'),
+        totalStones:get(cells,'totalStones'), itemKey:get(cells,'itemKey')
+      };
+      if(!row.itemKey) row.itemKey=buildItemKey(row);
+      rows.push(row);
+    }
+  } else {
+    // ── No header: fall back to positional mapping (blank Photo col at idx 2) ──
+    lines.forEach(c=>{
+      const orderNo=c[0]||'';
+      if(['ORDER POOL','Order No',''].includes(orderNo)) return;
+      const row={
+        orderNo, type:c[1]||'', article:c[3]||'', metal:c[4]||'',
         avgWt:c[5]||'', totalWt:c[6]||'', wtPurity:c[7]||'',
         size:c[8]||'', qty:c[9]||'',
         stoneType:c[10]||'', stoneSizing:c[11]||'',
         stoneDia:c[12]||'', stoneQtyPer:c[13]||'',
         totalStones:c[14]||'', itemKey:c[15]||''
       };
-      // compute item key if missing
       if(!row.itemKey) row.itemKey=buildItemKey(row);
       rows.push(row);
-      last=row;
-    }
-    // sub-rows (additional stone details, no order no) are ignored for the main table
-  });
-  if(!rows.length){toast('Could not parse — check that you copied from column A');return;}
-  D.pool=rows;save();renderPool();toast('Imported '+rows.length+' rows');
+    });
+  }
+
+  if(!rows.length){toast('Could not parse — include the header row when copying');return;}
+  D.pool=rows;save();renderPool();
+  toast('Imported '+rows.length+' rows'+(headerIdx>=0?' (matched by header)':''));
   g('pool-paste').value='';
 }
 
