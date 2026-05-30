@@ -6,8 +6,7 @@
 <title>JewelTrack — Production Management</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 /* ── Accounting / Ledger Style ── */
 :root{
@@ -183,6 +182,10 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
   <div class="nav-item" data-page="repair"><i class="ti ti-bandage"></i> Repair Jobs</div>
   <div class="nav-sec">Assistant</div>
   <div class="nav-item" data-page="ai"><i class="ti ti-help"></i> User Guide</div>
+  <div class="nav-sec">Data</div>
+  <div class="nav-item" onclick="backupData()"><i class="ti ti-download"></i> Backup data</div>
+  <div class="nav-item" onclick="g('restore-file').click()"><i class="ti ti-upload"></i> Restore data</div>
+  <input type="file" id="restore-file" accept="application/json,.json" style="display:none" onchange="restoreData(this)">
 </nav>
 <!-- Mobile bottom nav -->
 <div class="mob-nav">
@@ -205,7 +208,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
     <div class="card"><div class="ch"><span class="ct">Stone delivery status</span></div><div class="cb" id="dash-stones"></div></div>
   </div>
   <div class="card"><div class="ch"><span class="ct">All orders</span></div><div class="tw">
-    <table><thead><tr><th>Order no</th><th>Due date</th><th>Zone</th><th>Factory</th><th>Progress</th><th>Finished</th><th>Balance</th><th>Days</th><th>Finish date</th></tr></thead>
+    <table><thead><tr><th>Order no</th><th>Due date</th><th>Zone</th><th>Factory</th><th>Progress</th><th>Finished</th><th>Balance</th><th>Days</th><th>Finish date</th><th></th></tr></thead>
     <tbody id="dash-orders"></tbody></table>
   </div></div>
 </div>
@@ -228,12 +231,14 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 
 <!-- JOB MASTER -->
 <div id="page-jobs" class="page">
-  <div class="ph"><div class="pt">Job Master</div><div class="ps">Individual job items — click edit to update Repair, Received, and Finish date</div></div>
+  <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap"><div><div class="pt">Job Master</div><div class="ps">Individual job items — click edit to update Repair, Received, and Finish date</div></div><button class="btn btns" onclick="manageList('factory')"><i class="ti ti-settings"></i> Manage factories</button></div>
   <div class="frow">
-    <div style="flex:1;min-width:130px"><label class="fl">Search order</label><input type="text" id="job-search-order" placeholder="Order no..." oninput="renderJobs()" style="width:100%"></div>
-    <div style="flex:1;min-width:130px"><label class="fl">Search article</label><input type="text" id="job-search-article" placeholder="Article..." oninput="renderJobs()" style="width:100%"></div>
-    <div style="flex:1;min-width:130px"><label class="fl">Type</label><select id="job-type-f" onchange="renderJobs()" style="width:100%"><option value="">All types</option></select></div>
-    <div style="flex:1;min-width:130px"><label class="fl">Status</label><select id="job-fin-f" onchange="renderJobs()" style="width:100%"><option value="">All status</option><option value="finished">Finished</option><option value="wip">In progress</option></select></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Search order</label><input type="text" id="job-search-order" placeholder="Order no..." oninput="renderJobs()" style="width:100%"></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Search article</label><input type="text" id="job-search-article" placeholder="Article..." oninput="renderJobs()" style="width:100%"></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Search supplier</label><input type="text" id="job-search-supplier" placeholder="Supplier..." oninput="renderJobs()" style="width:100%"></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Factory</label><select id="job-factory-f" onchange="renderJobs()" style="width:100%"><option value="">All factories</option></select></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Type</label><select id="job-type-f" onchange="renderJobs()" style="width:100%"><option value="">All types</option></select></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Status</label><select id="job-fin-f" onchange="renderJobs()" style="width:100%"><option value="">All status</option><option value="finished">Finished</option><option value="wip">In progress</option></select></div>
   </div>
   <div class="card"><div class="tw"><table>
     <thead><tr><th>#</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Metal</th><th>Factory</th><th>Qty</th><th>Repair</th><th>Received</th><th>Balance</th><th>Stone</th><th>Finish date</th><th></th></tr></thead>
@@ -258,7 +263,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
     <div class="ch"><span class="ct">Current pool data</span><span id="pool-count" style="font-size:12px;color:var(--tx2)"></span></div>
     <div style="padding:0 1.25rem .75rem"><input type="text" id="pool-search" placeholder="Search..." oninput="renderPool()" style="max-width:280px"></div>
     <div class="tw"><table>
-      <thead><tr><th>Order no</th><th>Type</th><th>Article</th><th>Metal</th><th>Avg wt</th><th>Total wt</th><th>Wt purity</th><th>Size</th><th>Qty</th><th>Stone type</th><th>Stone sizing</th><th>Stone dia</th><th>Stone/pc</th><th>Total stones</th><th>Item key</th></tr></thead>
+      <thead><tr><th>Order no</th><th>Type</th><th>Article</th><th>Metal</th><th>Avg wt</th><th>Total wt</th><th>Wt purity</th><th>Size</th><th>Qty</th><th>Stone type</th><th>Stone sizing</th><th>Stone dia</th><th>Stone/pc</th><th>Total stones</th></tr></thead>
       <tbody id="pool-body"></tbody>
     </table></div>
   </div>
@@ -266,12 +271,14 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 
 <!-- STONE ORDER -->
 <div id="page-stone_order" class="page">
-  <div class="ph"><div class="pt">Stone Orders</div><div class="ps">Edit Supplier, Ordered Date, and Received inline</div></div>
+  <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap"><div><div class="pt">Stone Orders</div><div class="ps">Edit Supplier, Ordered Date, and Received inline</div></div><button class="btn btns" onclick="manageList('supplier')"><i class="ti ti-settings"></i> Manage suppliers</button></div>
   <div class="frow">
-    <div style="flex:1;min-width:130px"><label class="fl">Search order</label><input type="text" id="so-search-order" placeholder="Order no..." oninput="renderStoneOrders()" style="width:100%"></div>
-    <div style="flex:1;min-width:130px"><label class="fl">Search article</label><input type="text" id="so-search-article" placeholder="Article..." oninput="renderStoneOrders()" style="width:100%"></div>
-    <div style="flex:1;min-width:130px"><label class="fl">Status</label><select id="so-complete-f" onchange="renderStoneOrders()" style="width:100%"><option value="">All status</option><option value="FALSE">Pending</option><option value="TRUE">Complete</option></select></div>
-    <div style="flex:1;min-width:130px"><label class="fl">Supplier</label><select id="so-supplier-f" onchange="renderStoneOrders()" style="width:100%"><option value="">All suppliers</option></select></div>
+    <div style="flex:1;min-width:110px"><label class="fl">Search order</label><input type="text" id="so-search-order" placeholder="Order no..." oninput="renderStoneOrders()" style="width:100%"></div>
+    <div style="flex:1;min-width:110px"><label class="fl">Search article</label><input type="text" id="so-search-article" placeholder="Article..." oninput="renderStoneOrders()" style="width:100%"></div>
+    <div style="flex:1;min-width:110px"><label class="fl">Search stone type</label><input type="text" id="so-search-stone" placeholder="Stone type..." oninput="renderStoneOrders()" style="width:100%"></div>
+    <div style="flex:1;min-width:110px"><label class="fl">Search size</label><input type="text" id="so-search-size" placeholder="Size..." oninput="renderStoneOrders()" style="width:100%"></div>
+    <div style="flex:1;min-width:110px"><label class="fl">Status</label><select id="so-complete-f" onchange="renderStoneOrders()" style="width:100%"><option value="">All status</option><option value="FALSE">Pending</option><option value="TRUE">Complete</option></select></div>
+    <div style="flex:1;min-width:110px"><label class="fl">Supplier</label><select id="so-supplier-f" onchange="renderStoneOrders()" style="width:100%"><option value="">All suppliers</option></select></div>
   </div>
   <div class="card"><div class="tw"><table>
     <thead><tr><th>Order no</th><th>Type</th><th>Stone type</th><th>Size</th><th>Total qty</th><th>Supplier</th><th>Ordered date</th><th>Received</th><th>Balance</th><th>Status</th><th>Complete date</th><th></th></tr></thead>
@@ -288,7 +295,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
     </select>
     <select id="sp-status-f" onchange="renderStonePurchase()"><option value="">All status</option><option value="PENDING RECEIVE">Pending</option><option value="PARTIAL RECEIVE">Partial</option><option value="RECEIVED">Received</option></select>
     <input type="text" id="sp-search" placeholder="Search stone, order..." oninput="renderStonePurchase()">
-    <button class="btn btnp" onclick="exportStonePurchasePDF()"><i class="ti ti-file-type-pdf"></i> Export PDF</button>
+    <button class="btn btnp" onclick="exportStonePurchaseExcel()"><i class="ti ti-file-spreadsheet"></i> Export Excel</button>
   </div>
   <div id="sp-content"></div>
 </div>
@@ -363,7 +370,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
     <div class="ch"><span class="ct"><i class="ti ti-tool" style="color:var(--accent)"></i> Job Master</span></div>
     <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
       <strong style="color:var(--tx)">What it does:</strong> The heart of production tracking — one row per item. This is the single source of truth that feeds the Dashboard.<br><br>
-      <strong style="color:var(--tx)">How to use:</strong> Search by order no or article. Click the edit icon to update Received qty, Repair qty, Factory, Stone status and Finish date. Balance updates automatically. Setting Repair qty creates a Repair Job entry. Use the ✕ button to delete a row.
+      <strong style="color:var(--tx)">How to use:</strong> Search by order no, article or factory. Click the edit icon to update Received qty, Repair qty, Factory, Stone status and Finish date. Balance updates automatically. Setting Repair qty creates a Repair Job entry. To remove a whole finished order, use the Dashboard's delete button.
     </div>
   </div>
 
@@ -396,8 +403,19 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
     <div class="cb" style="font-size:13px;line-height:1.7;color:var(--tx2)">
       • <strong style="color:var(--tx)">Zones</strong> indicate urgency by due date: Red = urgent, Yellow = approaching, Green = on track.<br>
       • <strong style="color:var(--tx)">Re-import the same Google Sheet / Excel anytime</strong> — finished work and edits are never overwritten.<br>
-      • To add a new factory, choose <strong style="color:var(--tx)">"+ Add factory…"</strong> in the Job Master edit window.<br>
-      • All data is saved in your browser, so each device keeps its own copy.
+      • To add or remove a factory, use <strong style="color:var(--tx)">"Manage factories"</strong> on the Job Master page (or "+ Add factory…" in the edit window). Suppliers work the same way via <strong style="color:var(--tx)">"Manage suppliers"</strong> on the Stone Orders page.<br><br>
+
+      <strong style="color:var(--tx)">⚠️ Important — where your data lives</strong><br>
+      All data is stored in <strong style="color:var(--tx)">this browser on this computer only</strong>. There is no central server. This means:<br>
+      • Do <strong style="color:var(--tx)">not clear your browser cache / site data</strong> — it will erase everything.<br>
+      • Data does <strong style="color:var(--tx)">not</strong> follow you to another computer or another browser.<br>
+      • Avoid using Private / Incognito mode — data is wiped when the window closes.<br><br>
+
+      <strong style="color:var(--tx)">💾 Back up before clearing cache or switching computers</strong><br>
+      Use <strong style="color:var(--tx)">Backup data</strong> (left sidebar, under "Data") to download a <code>.json</code> file of everything. On the new computer or after clearing cache, open the app and use <strong style="color:var(--tx)">Restore data</strong> to load that file back. Do a backup regularly so you always have a recent copy.<br><br>
+
+      <strong style="color:var(--tx)">🧹 Keep things tidy</strong><br>
+      When an entire order is finished and delivered, delete it from the <strong style="color:var(--tx)">Dashboard</strong> using the trash button on its row. This removes all of that order's Job Master items, stones and repair entries in one step — safer than deleting rows one by one. Export a backup first if you want to keep a record.
     </div>
   </div>
 </div>
@@ -417,7 +435,7 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 function toISO(d){if(!d)return'';const p=d.split('/');if(p.length===3)return`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;return d;}
 function fromISO(d){if(!d)return'';const p=d.split('-');if(p.length===3)return`${p[2]}/${p[1]}/${p[0]}`;return d;}
 
-const SUPPLIERS = ['Vanyaa','Ideal','PinThai','PSG','Juluur'];
+let SUPPLIERS = ['Vanyaa','Ideal','PinThai','PSG','Juluur'];
 const REPAIR_REASONS = ['CROOK','POROSITY','DEFORM','POLISH','STONE'];
 
 const SEED = {
@@ -512,15 +530,45 @@ const SEED = {
 let D={};
 let FACTORIES=['PKL','Dabaan','Ideal'];
 const SK='jeweltrack_v4';
-function loadData(){try{const s=localStorage.getItem(SK);if(s){const p=JSON.parse(s);D={...JSON.parse(JSON.stringify(SEED)),...p};if(p.factories)FACTORIES=p.factories;}}catch(e){D=JSON.parse(JSON.stringify(SEED));} if(!D.orders)D=JSON.parse(JSON.stringify(SEED));
+function loadData(){try{const s=localStorage.getItem(SK);if(s){const p=JSON.parse(s);D={...JSON.parse(JSON.stringify(SEED)),...p};if(p.factories)FACTORIES=p.factories;if(p.suppliers)SUPPLIERS=p.suppliers;}}catch(e){D=JSON.parse(JSON.stringify(SEED));} if(!D.orders)D=JSON.parse(JSON.stringify(SEED));
   // ensure every job with repair>0 has a matching auto repair entry
   D.jobs.forEach(j=>{if((+j.repair||0)>0)syncRepairForJob(j);});
 }
-function save(){D.factories=FACTORIES;localStorage.setItem(SK,JSON.stringify(D));}
+function save(){D.factories=FACTORIES;D.suppliers=SUPPLIERS;localStorage.setItem(SK,JSON.stringify(D));}
 function g(id){return document.getElementById(id);}
 function gv(id){return g(id).value;}
 function sh(id,h){g(id).innerHTML=h;}
 function toast(m){const e=g('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2500);}
+
+// ── Backup / Restore all data to a JSON file ──
+function backupData(){
+  const payload=JSON.stringify(D,null,2);
+  const blob=new Blob([payload],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const today=new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
+  a.href=url;a.download='jeweltrack-backup-'+today+'.json';
+  a.click();URL.revokeObjectURL(url);
+  toast('Backup downloaded');
+}
+function restoreData(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const obj=JSON.parse(e.target.result);
+      if(!obj.jobs||!obj.orders){toast('Invalid backup file');return;}
+      if(!confirm('This will REPLACE all current data with the backup. Continue?'))return;
+      D=obj;
+      if(D.factories)FACTORIES=D.factories;
+      if(D.suppliers)SUPPLIERS=D.suppliers;
+      save();renderAll();refreshSupplierFilter();
+      toast('Data restored');
+    }catch(err){toast('Could not read file');}
+    input.value='';
+  };
+  reader.readAsText(file);
+}
 
 // NAV (sidebar + mobile)
 function navTo(page){
@@ -536,7 +584,7 @@ document.querySelectorAll('.nav-item,.mob-nav-item').forEach(el=>{
 // HELPERS
 function zbadge(z){if(!z)return'';const c=z.includes('RED')?'red':z.includes('YELLOW')?'yel':'grn';return`<span class="badge b${c[0]}"><span class="zdot ${c}"></span> ${z}</span>`;}
 function sbadge(s){if(!s)return'<span class="badge bgr">—</span>';if(s==='PENDING RECEIVE')return`<span class="badge by">${s}</span>`;if(s==='PARTIAL RECEIVE')return`<span class="badge bb">${s}</span>`;if(s==='RECEIVED')return`<span class="badge bg">${s}</span>`;return`<span class="badge bgr">${s}</span>`;}
-function supSel(val,idx,field){return`<select style="min-width:80px" onchange="inlineSet('${field}',${idx},this.value)">${SUPPLIERS.map(s=>`<option value="${s}"${s===val?' selected':''}>${s}</option>`).join('')}</select>`;}
+function supSel(val,idx,field){return`<select style="min-width:80px" onchange="if(this.value==='__add__'){const n=prompt('New supplier name:');if(n){SUPPLIERS.push(n);inlineSet('${field}',${idx},n);refreshSupplierFilter();}else{this.value='${val||SUPPLIERS[0]}'}}else{inlineSet('${field}',${idx},this.value)}">${SUPPLIERS.map(s=>`<option value="${s}"${s===val?' selected':''}>${s}</option>`).join('')}<option value="__add__">+ Add supplier…</option></select>`;}
 
 // INLINE SAVE
 function inlineSet(field,idx,val){
@@ -578,8 +626,9 @@ function renderDashboard(){
   const grn=o.filter(x=>x.zone==='GREEN').length;
   const bal=o.reduce((s,x)=>s+orderStats(x.orderNo).balance,0);
   const pend=D.stoneOrders.filter(x=>x.complete==='FALSE').length;
+  const activeRepairs=D.repairs.filter(r=>!r.receivedDate).length;
   g('dash-updated').textContent='Last updated: '+new Date().toLocaleDateString('en-GB');
-  sh('dash-metrics',`<div class="metric"><div class="ml">Total orders</div><div class="mv">${o.length}</div></div><div class="metric"><div class="ml">Red zone</div><div class="mv red">${red}</div></div><div class="metric"><div class="ml">Yellow zone</div><div class="mv yel">${yel}</div></div><div class="metric"><div class="ml">Green zone</div><div class="mv grn">${grn}</div></div><div class="metric"><div class="ml">Total balance</div><div class="mv">${bal}</div></div><div class="metric"><div class="ml">Pending stones</div><div class="mv yel">${pend}</div></div>`);
+  sh('dash-metrics',`<div class="metric"><div class="ml">Total orders</div><div class="mv">${o.length}</div></div><div class="metric"><div class="ml">Red zone</div><div class="mv red">${red}</div></div><div class="metric"><div class="ml">Yellow zone</div><div class="mv yel">${yel}</div></div><div class="metric"><div class="ml">Green zone</div><div class="mv grn">${grn}</div></div><div class="metric"><div class="ml">Total balance</div><div class="mv">${bal}</div></div><div class="metric"><div class="ml">Pending stones</div><div class="mv yel">${pend}</div></div><div class="metric"><div class="ml">Active repairs</div><div class="mv red">${activeRepairs}</div></div>`);
   sh('dash-zones',`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><span><span class="zdot red" style="margin-right:5px"></span>Red</span><strong>${red}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)"><span><span class="zdot yel" style="margin-right:5px"></span>Yellow</span><strong>${yel}</strong></div><div style="display:flex;justify-content:space-between;padding:8px 0"><span><span class="zdot grn" style="margin-right:5px"></span>Green</span><strong>${grn}</strong></div>`);
   const p=D.stonePurchase.filter(x=>x.status==='PENDING RECEIVE').length;
   const pt=D.stonePurchase.filter(x=>x.status==='PARTIAL RECEIVE').length;
@@ -593,8 +642,22 @@ function renderDashboard(){
     // factory: most common among this order's jobs
     const facs=D.jobs.filter(j=>j.orderNo===r.orderNo).map(j=>j.factory).filter(Boolean);
     const factory=facs.length?[...new Set(facs)].join(', '):(r.factory||'—');
-    return`<tr><td><strong>${r.orderNo}</strong></td><td>${r.dueDate}</td><td>${zbadge(r.zone)}</td><td><span class="tag">${factory}</span></td><td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><div class="pf ${c}" style="width:${pct}%"></div></div><span style="font-size:11px">${pct>0?pct+'%':'—'}</span></div></td><td>${st.finished}</td><td>${st.balance}</td><td>${r.daysElapsed||'—'}</td><td>${showFinish?`<span class="badge bg">${st.latestFinish}</span>`:'<span style="color:var(--tx3)">—</span>'}</td></tr>`;
+    return`<tr><td><strong>${r.orderNo}</strong></td><td>${r.dueDate}</td><td>${zbadge(r.zone)}</td><td><span class="tag">${factory}</span></td><td><div style="display:flex;align-items:center;gap:8px"><div class="pb"><div class="pf ${c}" style="width:${pct}%"></div></div><span style="font-size:11px">${pct>0?pct+'%':'—'}</span></div></td><td>${st.finished}</td><td>${st.balance}</td><td>${r.daysElapsed||'—'}</td><td>${showFinish?`<span class="badge bg">${st.latestFinish}</span>`:'<span style="color:var(--tx3)">—</span>'}</td><td><button class="btn btnd" onclick="deleteOrder('${r.orderNo.replace(/'/g,"\\'")}')" title="Delete entire order"><i class="ti ti-trash"></i></button></td></tr>`;
   }).join(''));
+}
+
+// Delete an entire order — removes every Job Master row, Stone Orders, Stone Purchase,
+// Repairs and the order header for that order number.
+function deleteOrder(orderNo){
+  const jobCount=D.jobs.filter(j=>j.orderNo===orderNo).length;
+  if(!confirm('Delete the ENTIRE order "'+orderNo+'"?\n\nThis removes:\n• '+jobCount+' Job Master item(s)\n• its Stone Orders, Stone Purchase and Repair entries\n• the order from the Dashboard\n\nThis cannot be undone. (Tip: Backup data first.)')) return;
+  D.jobs=D.jobs.filter(j=>j.orderNo!==orderNo);
+  D.orders=D.orders.filter(o=>o.orderNo!==orderNo);
+  D.stoneOrders=D.stoneOrders.filter(s=>s.orderNo!==orderNo);
+  D.stonePurchase=D.stonePurchase.filter(s=>s.orderNo!==orderNo);
+  D.repairs=D.repairs.filter(r=>r.orderNo!==orderNo);
+  if(D.pool) D.pool=D.pool.filter(p=>p.orderNo!==orderNo);
+  save();renderAll();toast('Order '+orderNo+' deleted');
 }
 
 // ORDERS
@@ -615,13 +678,23 @@ function jobStoneOK(j){
 function renderJobs(){
   const qo=gv('job-search-order').toLowerCase();
   const qa=gv('job-search-article').toLowerCase();
+  const qsup=gv('job-search-supplier').toLowerCase();
+  const fac=gv('job-factory-f');
   const tp=gv('job-type-f');const fin=gv('job-fin-f');
-  const f=D.jobs.filter(r=>
-    (r.orderNo+'').toLowerCase().includes(qo)&&
+  const f=D.jobs.filter(r=>{
+    // supplier match: any stone order linked to this job's itemKey uses that supplier
+    let supOK=true;
+    if(qsup){
+      const linked=D.stoneOrders.filter(s=>s.itemKey===r.itemKey||(s.orderNo===r.orderNo&&s.article===r.article));
+      supOK=linked.some(s=>(s.supplier+'').toLowerCase().includes(qsup));
+    }
+    return (r.orderNo+'').toLowerCase().includes(qo)&&
     (r.article+'').toLowerCase().includes(qa)&&
+    supOK&&
+    (!fac||r.factory===fac)&&
     (!tp||r.itemType===tp)&&
-    (!fin||(fin==='finished'?!!r.finishDate:!r.finishDate))
-  );
+    (!fin||(fin==='finished'?!!r.finishDate:!r.finishDate));
+  });
   sh('jobs-body',f.map(r=>{
     const i=D.jobs.indexOf(r);
     const stoneOK=jobStoneOK(r);
@@ -643,7 +716,6 @@ function renderJobs(){
       <td>${fd}</td>
       <td style="white-space:nowrap">
         <button class="btn btns" onclick="editJob(${i})"><i class="ti ti-edit"></i></button>
-        <button class="btn btnd" onclick="deleteJob(${i})" title="Delete row"><i class="ti ti-x"></i></button>
       </td>
     </tr>`;
   }).join('')||'<tr><td colspan="14" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');
@@ -654,15 +726,12 @@ function inlineCalcJob(i){
   save();
   const el=g('jbal-'+i);if(el)el.textContent=r.balance;
 }
-function deleteJob(i){
-  if(!confirm('Delete this job item?')) return;
-  D.jobs.splice(i,1);
-  save();renderJobs();toast('Row deleted');
-}
 
 function populateJobTypeFilter(){
   const types=[...new Set(D.jobs.map(j=>j.itemType))].sort();
-  g('job-type-f').innerHTML='<option value="">All types</option>'+types.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const tf=g('job-type-f');if(tf){const cur=tf.value;tf.innerHTML='<option value="">All types</option>'+types.map(t=>`<option value="${t}"${t===cur?' selected':''}>${t}</option>`).join('');}
+  const facs=[...new Set(D.jobs.map(j=>j.factory).filter(Boolean))].sort();
+  const ff=g('job-factory-f');if(ff){const cur=ff.value;ff.innerHTML='<option value="">All factories</option>'+facs.map(t=>`<option value="${t}"${t===cur?' selected':''}>${t}</option>`).join('');}
 }
 
 // ORDER POOL — full columns
@@ -671,7 +740,7 @@ function renderPool(){
   const data=D.pool||[];
   g('pool-count').textContent=data.length+' items';
   const f=data.filter(r=>JSON.stringify(r).toLowerCase().includes(q));
-  if(!f.length){sh('pool-body','<tr><td colspan="15" style="text-align:center;padding:2rem;color:var(--tx3)">No pool data — import from Google Sheet above</td></tr>');return;}
+  if(!f.length){sh('pool-body','<tr><td colspan="14" style="text-align:center;padding:2rem;color:var(--tx3)">No pool data — import from Google Sheet above</td></tr>');return;}
   sh('pool-body',f.map(r=>`<tr>
     <td>${r.orderNo||''}</td><td><span class="tag">${r.type||''}</span></td>
     <td>${r.article||''}</td><td style="font-size:12px">${r.metal||''}</td>
@@ -679,7 +748,6 @@ function renderPool(){
     <td>${r.size||''}</td><td>${r.qty||''}</td>
     <td>${r.stoneType||''}</td><td>${r.stoneSizing||''}</td><td>${r.stoneDia||''}</td>
     <td>${r.stoneQtyPer||''}</td><td>${r.totalStones||''}</td>
-    <td style="font-size:11px;color:var(--tx3)" title="${r.itemKey||''}">${(r.itemKey||'').substring(0,30)}${(r.itemKey||'').length>30?'…':''}</td>
   </tr>`).join(''));
 }
 
@@ -864,10 +932,14 @@ function buildItemKey(r){
 function renderStoneOrders(){
   const qo=gv('so-search-order').toLowerCase();
   const qa=gv('so-search-article').toLowerCase();
+  const qst=gv('so-search-stone').toLowerCase();
+  const qsz=gv('so-search-size').toLowerCase();
   const c=gv('so-complete-f');const s=gv('so-supplier-f');
   const f=D.stoneOrders.filter(r=>
     (r.orderNo+'').toLowerCase().includes(qo)&&
     (r.article+'').toLowerCase().includes(qa)&&
+    ((r.stoneType+'').toLowerCase().includes(qst))&&
+    ((r.stoneSize+'').toLowerCase().includes(qsz))&&
     (!c||r.complete===c)&&(!s||r.supplier===s)
   );
   sh('so-body',f.map(r=>{
@@ -930,47 +1002,34 @@ function inlineSPDate(i,val){
   save();renderStonePurchase();
 }
 
-// Export the currently-filtered Stone Purchase list to a PDF, grouped by supplier
-function exportStonePurchasePDF(){
-  if(!window.jspdf||!window.jspdf.jsPDF){toast('PDF library still loading — try again');return;}
+// Export the currently-filtered Stone Purchase list to an Excel file, grouped by supplier
+function exportStonePurchaseExcel(){
+  if(typeof XLSX==='undefined'){toast('Excel library still loading — try again');return;}
   const qs=gv('sp-search').toLowerCase();const st=gv('sp-status-f');const selSup=gv('sp-supplier-f');
   const all=D.stonePurchase.filter(r=>(r.supplier+r.orderNo+r.stoneType).toLowerCase().includes(qs)&&(!st||r.status===st)&&(!selSup||r.supplier===selSup));
   if(!all.length){toast('Nothing to export');return;}
   const sups=[...new Set(all.map(r=>r.supplier))].sort();
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
   const today=new Date().toLocaleDateString('en-GB');
-  let y=16;
-  doc.setFontSize(15);doc.setTextColor(27,77,140);
-  doc.text('Stone Purchase Request',14,y);
-  doc.setFontSize(9);doc.setTextColor(120);
-  doc.text('Generated: '+today,14,y+5);
-  y+=12;
+  const wb=XLSX.utils.book_new();
+  // one sheet per supplier
   sups.forEach(sup=>{
     const rows=all.filter(r=>r.supplier===sup).map(r=>{
       const soMatch=D.stoneOrders.find(s=>s.itemKey===r.jobId||(s.orderNo===r.orderNo&&s.stoneType===r.stoneType));
       const bal=soMatch!==undefined?soMatch.balance:r.balance;
-      return [r.orderNo,r.itemType,r.stoneType,r.stoneDia,String(r.totalQty),String(bal),r.orderedDate,statusLabel(r.status)];
+      return {
+        'Order no':r.orderNo,'Type':r.itemType,'Stone type':r.stoneType,
+        'Size':r.stoneDia,'Total':r.totalQty,'Balance':bal,
+        'Ordered':r.orderedDate,'Status':statusLabel(r.status)
+      };
     });
-    // page-break if near bottom
-    if(y>260){doc.addPage();y=16;}
-    doc.setFontSize(11);doc.setTextColor(91,63,140);
-    doc.text(sup+'  ('+rows.length+' items)',14,y);
-    y+=2;
-    doc.autoTable({
-      startY:y,
-      head:[['Order','Type','Stone','Size','Total','Balance','Ordered','Status']],
-      body:rows,
-      theme:'grid',
-      headStyles:{fillColor:[27,77,140],fontSize:8,halign:'left'},
-      bodyStyles:{fontSize:8},
-      margin:{left:14,right:14},
-      tableLineWidth:0.1
-    });
-    y=doc.lastAutoTable.finalY+12;
+    const ws=XLSX.utils.json_to_sheet(rows);
+    ws['!cols']=[{wch:14},{wch:10},{wch:18},{wch:10},{wch:8},{wch:8},{wch:12},{wch:10}];
+    // sheet name max 31 chars, no special chars
+    const safe=sup.replace(/[\\\/\?\*\[\]:]/g,'').substring(0,31)||'Supplier';
+    XLSX.utils.book_append_sheet(wb,ws,safe);
   });
-  doc.save('stone-purchase-'+today.replace(/\//g,'-')+'.pdf');
-  toast('PDF exported');
+  XLSX.writeFile(wb,'stone-purchase-'+(sups.length===1?sups[0].replace(/[^a-zA-Z0-9ก-๙]/g,'')+'-':'')+today.replace(/\//g,'-')+'.xlsx');
+  toast('Excel exported');
 }
 function statusLabel(s){return s==='RECEIVED'?'Received':s==='PARTIAL RECEIVE'?'Partial':'Pending';}
 
@@ -1053,6 +1112,31 @@ function factorySel(id,cur){
 }
 function factoryOpts(cur){
   return FACTORIES.map(f=>`<option value="${f}"${f===cur?' selected':''}>${f}</option>`).join('')+`<option value="__add__">+ Add factory…</option>`;
+}
+// Repopulate the Stone Orders supplier filter dropdown after the list changes
+function refreshSupplierFilter(){
+  const sel=g('so-supplier-f');if(sel){const cur=sel.value;sel.innerHTML='<option value="">All suppliers</option>'+SUPPLIERS.map(s=>`<option value="${s}"${s===cur?' selected':''}>${s}</option>`).join('');}
+  const sps=g('sp-supplier-f');if(sps){const cur=sps.value;sps.innerHTML='<option value="">All suppliers</option>'+SUPPLIERS.map(s=>`<option value="${s}"${s===cur?' selected':''}>${s}</option>`).join('');}
+  save();renderAll();
+}
+// Manage list (add / remove names) via simple prompts
+function manageList(which){
+  const list = which==='supplier'?SUPPLIERS:FACTORIES;
+  const label = which==='supplier'?'Suppliers':'Factories';
+  const current = list.map((x,i)=>`${i+1}. ${x}`).join('\n');
+  const action = prompt(`${label}:\n${current}\n\nType a NEW name to add it,\nor type the exact name to REMOVE it.\n(Leave blank to cancel)`);
+  if(!action) return;
+  const idx = list.findIndex(x=>x.toLowerCase()===action.trim().toLowerCase());
+  if(idx>=0){
+    if(list.length<=1){toast('Cannot remove the last one');return;}
+    list.splice(idx,1);
+    toast('Removed: '+action.trim());
+  }else{
+    list.push(action.trim());
+    toast('Added: '+action.trim());
+  }
+  if(which==='supplier') refreshSupplierFilter();
+  else {save();renderAll();}
 }
 function editJob(idx){
   const r=D.jobs[idx];
@@ -1153,7 +1237,7 @@ function guideShow(key){
 }
 
 // RENDER ALL
-function renderAll(){renderDashboard();renderOrders();renderJobs();renderPool();renderStoneOrders();renderStonePurchase();renderRepairs();}
+function renderAll(){populateJobTypeFilter();renderDashboard();renderOrders();renderJobs();renderPool();renderStoneOrders();renderStonePurchase();renderRepairs();}
 
 loadData();
 // One-time sync: ensure jobs with repair>0 appear in Repair Jobs
