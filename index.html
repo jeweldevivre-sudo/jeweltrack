@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 /* ── Accounting / Ledger Style ── */
 :root{
@@ -142,8 +144,8 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 .sp-header{background:var(--bg2);color:var(--accent);padding:.8rem 1.1rem;font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd2);text-transform:uppercase;letter-spacing:.02em}
 /* MOBILE BOTTOM NAV */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--bd2);z-index:100;padding:6px 0 env(safe-area-inset-bottom);box-shadow:0 -2px 12px rgba(28,37,48,.08)}
-.mob-nav-items{display:flex;justify-content:space-around}
-.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;cursor:pointer;color:var(--tx3);font-size:9.5px;min-width:52px;border-radius:6px;transition:all .12s;text-transform:uppercase;letter-spacing:.02em}
+.mob-nav-items{display:flex;justify-content:space-between;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;cursor:pointer;color:var(--tx3);font-size:9px;min-width:48px;flex:1 0 auto;border-radius:6px;transition:all .12s;text-transform:uppercase;letter-spacing:.02em}
 .mob-nav-item.active{color:var(--accent)}
 .mob-nav-item i{font-size:19px}
 /* PRINT */
@@ -190,10 +192,12 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 <!-- Mobile bottom nav -->
 <div class="mob-nav">
   <div class="mob-nav-items">
-    <div class="mob-nav-item active" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+    <div class="mob-nav-item active" data-page="dashboard"><i class="ti ti-layout-dashboard"></i>Dash</div>
     <div class="mob-nav-item" data-page="jobs"><i class="ti ti-tool"></i>Jobs</div>
+    <div class="mob-nav-item" data-page="pool"><i class="ti ti-database-import"></i>Pool</div>
     <div class="mob-nav-item" data-page="stone_order"><i class="ti ti-triangle"></i>Stones</div>
-    <div class="mob-nav-item" data-page="stone_purchase"><i class="ti ti-receipt"></i>Purchase</div>
+    <div class="mob-nav-item" data-page="stone_purchase"><i class="ti ti-receipt"></i>Buy</div>
+    <div class="mob-nav-item" data-page="repair"><i class="ti ti-bandage"></i>Repair</div>
     <div class="mob-nav-item" data-page="ai"><i class="ti ti-help"></i>Guide</div>
   </div>
 </div>
@@ -302,12 +306,21 @@ td input,td select{padding:4px 7px;font-size:11.5px;border-radius:4px}
 
 <!-- REPAIR -->
 <div id="page-repair" class="page">
-  <div class="ph">
-    <div class="pt">Repair Jobs</div>
-    <div class="ps">Auto-generated from Job Master repairs — edit Ref. Job and Received Date inline</div>
+  <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+    <div>
+      <div class="pt">Repair Jobs</div>
+      <div class="ps">Auto-generated from Job Master — to finish a repair, set its Repair qty to 0 in Job Master and the row disappears</div>
+    </div>
+    <button class="btn btnp" onclick="exportRepairsPDF()"><i class="ti ti-file-type-pdf"></i> Export PDF</button>
+  </div>
+  <div class="frow">
+    <div style="flex:1;min-width:120px"><label class="fl">Search ref. job</label><input type="text" id="rep-search-ref" placeholder="Ref. job..." oninput="renderRepairs()" style="width:100%"></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Search order</label><input type="text" id="rep-search-order" placeholder="Order no..." oninput="renderRepairs()" style="width:100%"></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Search article</label><input type="text" id="rep-search-article" placeholder="Article..." oninput="renderRepairs()" style="width:100%"></div>
+    <div style="flex:1;min-width:120px"><label class="fl">Search factory</label><input type="text" id="rep-search-factory" placeholder="Factory..." oninput="renderRepairs()" style="width:100%"></div>
   </div>
   <div class="card"><div class="tw"><table>
-    <thead><tr><th>Sent date</th><th>Ref. job</th><th>Item key</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Qty</th><th>Factory</th><th>Repair status</th><th>Repair reason</th><th>Received date</th></tr></thead>
+    <thead><tr><th>Sent date</th><th>Ref. job</th><th>Order no</th><th>Type</th><th>Article</th><th>Size</th><th>Qty</th><th>Factory</th><th>Repair reason</th></tr></thead>
     <tbody id="repair-body"></tbody>
   </table></div></div>
 </div>
@@ -650,7 +663,11 @@ function renderDashboard(){
 // Repairs and the order header for that order number.
 function deleteOrder(orderNo){
   const jobCount=D.jobs.filter(j=>j.orderNo===orderNo).length;
-  if(!confirm('Delete the ENTIRE order "'+orderNo+'"?\n\nThis removes:\n• '+jobCount+' Job Master item(s)\n• its Stone Orders, Stone Purchase and Repair entries\n• the order from the Dashboard\n\nThis cannot be undone. (Tip: Backup data first.)')) return;
+  if(!confirm('Delete the ENTIRE order "'+orderNo+'"?\n\nThis removes:\n• '+jobCount+' Job Master item(s)\n• its Stone Orders, Stone Purchase and Repair entries\n• the order from the Dashboard\n\nReasons you might do this: order finished & delivered, uploaded by mistake, or cancelled by customer.\n\nThis cannot be undone. (Tip: Backup data first.)')) return;
+  // second confirmation — type the order number to confirm
+  const typed=prompt('To permanently delete, type the order number exactly:\n\n'+orderNo);
+  if(typed===null) return;
+  if(typed.trim()!==orderNo){toast('Order number did not match — nothing deleted');return;}
   D.jobs=D.jobs.filter(j=>j.orderNo!==orderNo);
   D.orders=D.orders.filter(o=>o.orderNo!==orderNo);
   D.stoneOrders=D.stoneOrders.filter(s=>s.orderNo!==orderNo);
@@ -1035,30 +1052,77 @@ function statusLabel(s){return s==='RECEIVED'?'Received':s==='PARTIAL RECEIVE'?'
 
 // REPAIR — inline Ref.Job, Reason dropdown, Received Date
 function renderRepairs(){
-  if(!D.repairs.length){sh('repair-body','<tr><td colspan="12" style="text-align:center;padding:2rem;color:var(--tx3)">No repair jobs — set Repair qty in Job Master to generate entries here</td></tr>');return;}
+  const qr=gv('rep-search-ref').toLowerCase();
+  const qo=gv('rep-search-order').toLowerCase();
+  const qa=gv('rep-search-article').toLowerCase();
+  const qf=gv('rep-search-factory').toLowerCase();
+  if(!D.repairs.length){sh('repair-body','<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">No repair jobs — set Repair qty in Job Master to generate entries here</td></tr>');return;}
   // sort by sent date (ISO compare) but keep original index for inline edits
-  const sorted=D.repairs.map((r,i)=>({r,i})).sort((a,b)=>{
+  let sorted=D.repairs.map((r,i)=>({r,i})).sort((a,b)=>{
     const da=toISO(a.r.sentDate)||'9999',db=toISO(b.r.sentDate)||'9999';
     return da<db?-1:da>db?1:0;
   });
+  sorted=sorted.filter(({r})=>
+    (r.refJob+'').toLowerCase().includes(qr)&&
+    (r.orderNo+'').toLowerCase().includes(qo)&&
+    (r.article+'').toLowerCase().includes(qa)&&
+    (r.factory+'').toLowerCase().includes(qf)
+  );
+  if(!sorted.length){sh('repair-body','<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">No results</td></tr>');return;}
   sh('repair-body',sorted.map(({r,i})=>{
-    const done=!!r.receivedDate;
-    const st=done?'<span class="badge bg">Done</span>':'<span class="badge by">Pending</span>';
-    return`<tr style="${done?'opacity:.7':''}">
+    return`<tr>
       <td>${r.sentDate||'<span style="color:var(--tx3)">—</span>'}</td>
       <td><input type="text" value="${r.refJob||''}" placeholder="Ref..." onchange="inlineSet('rep_refJob',${i},this.value)"></td>
-      <td style="font-size:11px;color:var(--tx3)" title="${r.itemKey||''}">${(r.itemKey||r.article||'').substring(0,20)}…</td>
       <td>${r.orderNo}</td>
       <td><span class="tag">${r.type}</span></td>
       <td>${r.article}</td>
       <td>${r.size||'—'}</td>
       <td>${r.qty}</td>
       <td><span class="tag">${r.factory}</span></td>
-      <td>${st}</td>
       <td><span class="badge br">${r.repairReason||'—'}</span></td>
-      <td><input type="date" value="${toISO(r.receivedDate)}" onchange="inlineSet('rep_receivedDate',${i},fromISO(this.value))"></td>
     </tr>`;
   }).join(''));
+}
+
+// Export current Repair Jobs (filtered) to PDF, grouped by factory — to send to workshops
+function exportRepairsPDF(){
+  if(!window.jspdf||!window.jspdf.jsPDF){toast('PDF library still loading — try again');return;}
+  const qr=gv('rep-search-ref').toLowerCase();const qo=gv('rep-search-order').toLowerCase();
+  const qa=gv('rep-search-article').toLowerCase();const qf=gv('rep-search-factory').toLowerCase();
+  const all=D.repairs.filter(r=>
+    (r.refJob+'').toLowerCase().includes(qr)&&(r.orderNo+'').toLowerCase().includes(qo)&&
+    (r.article+'').toLowerCase().includes(qa)&&(r.factory+'').toLowerCase().includes(qf)
+  );
+  if(!all.length){toast('Nothing to export');return;}
+  const facs=[...new Set(all.map(r=>r.factory||'—'))].sort();
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const today=new Date().toLocaleDateString('en-GB');
+  let y=16;
+  doc.setFontSize(15);doc.setTextColor(27,77,140);
+  doc.text('Repair Jobs',14,y);
+  doc.setFontSize(9);doc.setTextColor(120);
+  doc.text('Generated: '+today,14,y+5);
+  y+=12;
+  facs.forEach(fac=>{
+    const rows=all.filter(r=>(r.factory||'—')===fac).map(r=>[
+      r.sentDate||'-',r.refJob||'-',r.orderNo,r.type,r.article,r.size||'-',
+      String(r.qty),r.repairReason||'-'
+    ]);
+    if(y>180){doc.addPage();y=16;}
+    doc.setFontSize(11);doc.setTextColor(91,63,140);
+    doc.text('Factory: '+fac+'  ('+rows.length+' items)',14,y);y+=2;
+    doc.autoTable({
+      startY:y,
+      head:[['Sent','Ref. job','Order','Type','Article','Size','Qty','Reason']],
+      body:rows,theme:'grid',
+      headStyles:{fillColor:[27,77,140],fontSize:8,halign:'left'},
+      bodyStyles:{fontSize:8},margin:{left:14,right:14},tableLineWidth:0.1
+    });
+    y=doc.lastAutoTable.finalY+12;
+  });
+  doc.save('repair-jobs-'+today.replace(/\//g,'-')+'.pdf');
+  toast('PDF exported');
 }
 
 function populateSpSupplierFilter(){
